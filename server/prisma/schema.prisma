@@ -1,14 +1,124 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "mysql"
   url      = env("DATABASE_URL")
+}
+
+model Admin {
+  id        Int      @id @default(autoincrement())
+  username  String   @unique
+  password  String
+  name      String?
+  createdAt DateTime @default(now())
+}
+
+// ------------------------------------------------------
+// QUẢN LÝ XE & BIẾN THỂ MÀU SẮC
+// ------------------------------------------------------
+model Car {
+  id          Int      @id @default(autoincrement())
+  name        String // VD: VinFast VF 5 Plus
+  slug        String   @unique
+  price       Decimal  @db.Decimal(15, 2)
+  salePrice   Decimal? @db.Decimal(15, 2)
+  category    String
+  thumbnail   String
+  description String?  @db.LongText
+  isActive    Boolean  @default(true)
+
+  // Quan hệ 1-N với bảng Màu Xe
+  colors CarColor[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// Bảng lưu cấu hình đổi màu xe
+model CarColor {
+  id        Int    @id @default(autoincrement())
+  carId     Int
+  colorName String // VD: "Đỏ"
+  colorHex  String // VD: "#FF0000" (Dùng để hiển thị nút chọn màu)
+  imageUrl  String // Link ảnh xe màu đỏ
+
+  car Car @relation(fields: [carId], references: [id], onDelete: Cascade)
+}
+
+// ------------------------------------------------------
+// DỊCH VỤ: BẢO HIỂM
+// ------------------------------------------------------
+model Insurance {
+  id          Int     @id @default(autoincrement())
+  name        String // VD: "Bảo hiểm thân vỏ PTI 1 năm"
+  provider    String // VD: "PTI", "Bảo Việt"
+  price       Decimal @db.Decimal(15, 2)
+  description String? @db.Text
+  isActive    Boolean @default(true)
+
+  createdAt DateTime @default(now())
+}
+
+// ------------------------------------------------------
+// PHỤ KIỆN (AFFILIATE SHOPEE)
+// ------------------------------------------------------
+model Accessory {
+  id        Int     @id @default(autoincrement())
+  name      String
+  price     Decimal @db.Decimal(15, 2)
+  thumbnail String
+  shopeeUrl String  @db.Text
+  category  String
+  isActive  Boolean @default(true)
+
+  createdAt DateTime @default(now())
+}
+
+// ------------------------------------------------------
+// KHÁCH HÀNG (LEADS) - PHỤC VỤ CHẠY ADS & CHỐT ĐƠN
+// ------------------------------------------------------
+model Lead {
+  id       Int     @id @default(autoincrement())
+  fullName String
+  phone    String  @db.VarChar(20)
+  email    String?
+
+  // Nhu cầu cụ thể
+  serviceType String // 'LAI_THU', 'BAO_GIA', 'MUA_BAO_HIEM', 'THUE_XE'
+  carInterest String? // VD: "VF 5"
+
+  // THÊM MỚI: Dành riêng cho form Lái Thử
+  preferredDate DateTime? // Ngày hẹn lái thử
+  location      String? // Địa chỉ/Chi nhánh muốn lái thử
+
+  notes String? @db.Text
+
+  // Tracking Quảng cáo
+  utmSource   String?
+  utmMedium   String?
+  utmCampaign String?
+
+  status String @default("NEW") // 'NEW', 'PROCESSING', 'CONVERTED', 'CANCELED'
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// ------------------------------------------------------
+// TIN TỨC & KHUYẾN MÃI (SEO)
+// ------------------------------------------------------
+model Post {
+  id          Int     @id @default(autoincrement())
+  title       String
+  slug        String  @unique
+  thumbnail   String
+  excerpt     String? @db.Text
+  content     String  @db.LongText
+  category    String
+  isPublished Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
