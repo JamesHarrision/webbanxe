@@ -3,6 +3,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 
 import adminRoutes from "./routes/admin.routes";
+import carRoutes from "./routes/car.routes";
 
 dotenv.config();
 
@@ -16,6 +17,7 @@ app.use(express.urlencoded({ extended: true }));
 
 // Routes
 app.use('/api/v1/admin', adminRoutes);
+app.use('/api/v1/cars', carRoutes);
 
 
 // Health check endpoint
