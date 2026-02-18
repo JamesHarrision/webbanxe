@@ -1,22 +1,20 @@
 {
   "compilerOptions": {
-    "target": "ES2022",
-    "module": "NodeNext",
-    "moduleResolution": "NodeNext",
-    "outDir": "./dist",
-    "rootDir": "./src",
-    "strict": true,
+    "target": "ES2020",
+    "module": "commonjs",
+    "outDir": "./dist", // Quan trọng: Nơi xuất file JS
+    "rootDir": "./src", // Quan trọng: Nơi chứa code nguồn
+    "strict": true, // Chế độ nghiêm ngặt (Clean Code)
     "esModuleInterop": true,
-    "skipLibCheck": true,
+    "skipLibCheck": true, // Bỏ qua check lỗi trong node_modules (Rất quan trọng để tránh lỗi tào lao)
     "forceConsistentCasingInFileNames": true
   },
   "include": [
     "src/**/*"
-  ],
+  ], // Chỉ build code trong src
   "exclude": [
-    "node_modules"
-  ],
-  "ts-node": {
-    "esm": true
-  }
+    "node_modules",
+    "dist",
+    "**/*.test.ts"
+  ] // Tuyệt đối không build node_modules
 }
