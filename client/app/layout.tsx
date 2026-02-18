@@ -1,6 +1,10 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import StyledComponentsRegistry from "../lib/antd-registry";
+import { ConfigProvider } from "antd";
+import theme from "../theme/themeConfig";
+import QueryProvider from "@/components/providers/QueryProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -24,10 +28,14 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        {children}
+      <body className="bg-slate-50">
+        <StyledComponentsRegistry>
+          <ConfigProvider theme={theme}>
+            <QueryProvider>
+              {children}
+            </QueryProvider>
+          </ConfigProvider>
+        </StyledComponentsRegistry>
       </body>
     </html>
   );
