@@ -1,13 +1,15 @@
 import { Router } from 'express';
 import { submitLead, getLeads, getLead, updateStatus, deleteLead } from '../controllers/lead.controller';
 import { verifyToken } from '../middlewares/auth.middleware';
+import { validate } from '../middlewares/validate.middleware';
+import { createLeadSchema } from '../validations/lead.validation';
 
 const router = Router();
 
 // =====================================
 // PUBLIC ROUTES (Frontend gọi khi submit form)
 // =====================================
-router.post('/', submitLead);
+router.post('/', validate(createLeadSchema), submitLead);
 
 // =====================================
 // PROTECTED ROUTES (Admin quản lý CRM)
