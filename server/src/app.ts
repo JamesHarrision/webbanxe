@@ -6,6 +6,7 @@ import adminRoutes from "./routes/admin.routes";
 import carRoutes from "./routes/car.routes";
 import uploadRoutes from "./routes/upload.routes";
 import leadRoutes from "./routes/lead.routes";
+import postRoutes from "./routes/post.routes";
 
 dotenv.config();
 
@@ -22,6 +23,7 @@ app.use('/api/v1/admin', adminRoutes);
 app.use('/api/v1/cars', carRoutes);
 app.use('/api/v1/upload', uploadRoutes);
 app.use('/api/v1/leads', leadRoutes);
+app.use('/api/v1/posts', postRoutes);
 
 // Health check endpoint
 app.get('/api/v1/health', (req, res) => {
