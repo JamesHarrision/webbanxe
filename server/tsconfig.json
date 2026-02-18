@@ -10,7 +10,8 @@
     "forceConsistentCasingInFileNames": true
   },
   "include": [
-    "src/**/*"
+    "src/**/*",
+    "validations/validate.middleware.ts"
   ], // Chỉ build code trong src
   "exclude": [
     "node_modules",
