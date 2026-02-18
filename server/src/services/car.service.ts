@@ -1,4 +1,5 @@
 import { prisma } from '../config/prisma';
+import { deleteCloudinaryImages, extractCloudinaryIdsFromHtml, extractPublicIdFromUrl } from '../utils/cloudinary.util';
 
 // Lấy danh sách xe (Public thì chỉ lấy xe đang active, Admin thì lấy tất cả)
 export const getCars = async (isAdmin: boolean = false) => {
@@ -54,7 +55,40 @@ export const updateCar = async (id: number, data: any) => {
 
 // Xóa xe (Prisma sẽ tự động xóa các CarColor liên quan do ta đã set onDelete: Cascade trong schema)
 export const deleteCar = async (id: number) => {
-  return await prisma.car.delete({
+  // 1. Lấy thông tin xe (bao gồm mô tả HTML và các ảnh con) để chuẩn bị xóa ảnh
+  const car = await prisma.car.findUnique({
     where: { id },
+    include: { colors: true }
   });
+
+  if (!car) throw new Error('Không tìm thấy xe');
+
+  // 2. Thu thập ID ảnh cần xóa
+  const publicIdsToDelete: string[] = [];
+
+  // Thumbnail của xe
+  const thumbId = extractPublicIdFromUrl(car.thumbnail);
+  if (thumbId) publicIdsToDelete.push(thumbId);
+
+  // Ảnh biến thể màu sắc
+  car.colors.forEach(color => {
+    const colorImgId = extractPublicIdFromUrl(color.imageUrl);
+    if (colorImgId) publicIdsToDelete.push(colorImgId);
+  });
+
+  // Ảnh nhúng trong nội dung TinyMCE (Bài toán quét Regex)
+  if (car.description) {
+    const htmlImgIds = extractCloudinaryIdsFromHtml(car.description);
+    publicIdsToDelete.push(...htmlImgIds);
+  }
+
+  // 3. Xóa dữ liệu xe trong MySQL trước
+  const result = await prisma.car.delete({
+    where: { id }
+  });
+
+  // 4. Xóa ảnh trên Cloudinary (Chạy bất đồng bộ, không dùng await để ko làm nghẽn API Response của Admin)
+  deleteCloudinaryImages(publicIdsToDelete);
+
+  return result;
 };
