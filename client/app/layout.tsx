@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import StyledComponentsRegistry from "../lib/antd-registry";
-import { ConfigProvider } from "antd";
+import { ConfigProvider, App } from "antd";
 import theme from "../theme/themeConfig";
 import QueryProvider from "@/components/providers/QueryProvider";
 
@@ -28,12 +28,14 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className="bg-slate-50">
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased bg-slate-50`}>
         <StyledComponentsRegistry>
           <ConfigProvider theme={theme}>
-            <QueryProvider>
-              {children}
-            </QueryProvider>
+            <App>
+              <QueryProvider>
+                {children}
+              </QueryProvider>
+            </App>
           </ConfigProvider>
         </StyledComponentsRegistry>
       </body>

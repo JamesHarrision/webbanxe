@@ -5,7 +5,6 @@ import PublicLayout from '@/components/layouts/PublicLayout';
 import LeadForm from '@/components/forms/LeadForm';
 import { Button } from 'antd';
 import { ThunderboltOutlined, SafetyCertificateOutlined, DollarOutlined } from '@ant-design/icons';
-import Image from 'next/image';
 import HeroSlider from '@/components/home/HeroSlider';
 import ProductList from '@/components/home/ProductList';
 import Testimonials from '@/components/home/Testimonials';

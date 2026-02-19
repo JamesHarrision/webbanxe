@@ -2,7 +2,6 @@
 
 import React from 'react';
 import { PhoneOutlined } from '@ant-design/icons';
-import Image from 'next/image';
 
 const FloatingContactButtons = () => {
   return (

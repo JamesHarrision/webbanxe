@@ -4,7 +4,8 @@
 import React from 'react';
 import { Carousel, Button } from 'antd';
 import { RightOutlined } from '@ant-design/icons';
-import Image from 'next/image';
+import NextImage from 'next/image';
+import logo from '@/app/logo.png';
 
 const HeroSlider = () => {
   const slides = [
@@ -13,7 +14,7 @@ const HeroSlider = () => {
       title: "MUA 1 TẶNG 1",
       subtitle: "TỔNG GIÁ TRỊ ƯU ĐÃI LÊN ĐẾN 268 TRIỆU ĐỒNG",
       description: "Sở hữu VinFast VF 8 - Nhận ngay Evo200 Lite. Áp dụng từ 03-31/10/2025.",
-      image: "https://vinfasttiengiang.net.vn/wp-content/uploads/2023/10/banner-vf8-thang-10-2023.jpg", // Placeholder or real URL if available. Using a generic VinFast banner logic.
+      image: logo, // Use logo or placeholder
       bgColor: "bg-blue-900"
     },
     {
@@ -21,7 +22,7 @@ const HeroSlider = () => {
       title: "VINFAST VF 9",
       subtitle: "MÃNH LIỆT TINH THẦN VIỆT NAM",
       description: "Mẫu SUV điện hạng sang cỡ lớn 7 chỗ ngồi.",
-      image: "https://shop.vinfastauto.com/on/demandware.static/-/Sites-app_vinfast_vn-Library/default/dw86444855/images/LadingPage/VF9/VF9_banner_pc.jpg",
+      image: logo, // Placeholder
       bgColor: "bg-black"
     },
     {
@@ -29,7 +30,7 @@ const HeroSlider = () => {
       title: "VINFAST VF 6",
       subtitle: "GHI DẤU TỪNG KHOẢNH KHẮC",
       description: "Tuyệt tác thiết kế - Công nghệ thông minh.",
-      image: "https://shop.vinfastauto.com/on/demandware.static/-/Sites-app_vinfast_vn-Library/default/dw18544257/images/LadingPage/VF6/VF6_banner_pc.jpg",
+      image: logo, // Placeholder
       bgColor: "bg-orange-700"
     }
   ];
@@ -42,7 +43,7 @@ const HeroSlider = () => {
             <div className={`relative h-[500px] md:h-[600px] w-full flex items-center ${slide.bgColor}`}>
               {/* Background Image Overlay */}
               <div className="absolute inset-0 z-0">
-                <img src={slide.image} alt={slide.title} className="w-full h-full object-cover opacity-60" />
+                <NextImage src={slide.image} alt={slide.title} fill className="object-cover opacity-60" />
                 <div className="absolute inset-0 bg-gradient-to-r from-black/80 to-transparent" />
               </div>
 

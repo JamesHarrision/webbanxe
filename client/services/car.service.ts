@@ -1,22 +1,46 @@
 
-import axiosContext from '@/lib/axios';
+import axios from '@/lib/axios';
+
+export interface Car {
+  id: number;
+  name: string;
+  slug: string;
+  price: number;
+  salePrice?: number;
+  category: string;
+  thumbnail: string;
+  description?: string;
+  isActive: boolean;
+  // colors?: CarColor[];
+  createdAt?: string;
+}
 
 export const carService = {
-  getAll: async () => {
-    // Public endpoint, no need for admin axios instance usually, but let's use the base one if exists or just fetch
-    // If the public endpoint /cars doesn't require auth, we can use a standard axios instance or fetch.
-    // Assuming backend is at NEXT_PUBLIC_API_URL
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/cars`, { cache: 'no-store' });
-    if (!response.ok) {
-      // Return empty array or throw, but for homepage let's return mock if fail or handle gracefully
-      return [];
-    }
-    return response.json();
+  getAll: async (_isAdmin = false) => {
+    // Admin uses the same endpoint but might get different data if backend handles it
+    // Actually backend `getCars` checks `req.admin`. 
+    // If we use `axios` (instance with interceptor), it will send token.
+    const response = await axios.get('/cars');
+    return response.data.data;
   },
 
-  getFeatured: async () => {
-    // Mock for now if endpoint doesn't support filtering
-    const cars = await carService.getAll();
-    return cars.slice(0, 8);
+  getByIdOrSlug: async (idOrSlug: string | number) => {
+    const response = await axios.get(`/cars/${idOrSlug}`);
+    return response.data.data;
+  },
+
+  create: async (data: any) => {
+    const response = await axios.post('/cars', data);
+    return response.data;
+  },
+
+  update: async (id: number, data: any) => {
+    const response = await axios.put(`/cars/${id}`, data);
+    return response.data;
+  },
+
+  delete: async (id: number) => {
+    const response = await axios.delete(`/cars/${id}`);
+    return response.data;
   }
 };

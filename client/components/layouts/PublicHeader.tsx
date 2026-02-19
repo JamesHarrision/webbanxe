@@ -3,12 +3,13 @@
 import React, { useState } from 'react';
 import { Layout, Menu, Drawer, Button } from 'antd';
 import Link from 'next/link';
+import NextImage from 'next/image';
+import logo from '@/app/logo.png';
 import {
   PhoneOutlined,
   MailOutlined,
   FacebookFilled,
   YoutubeFilled,
-  TikTokFilled, // Antd might not have TikTok, check or use placeholder
   MenuOutlined,
   DownOutlined
 } from '@ant-design/icons';
@@ -30,7 +31,7 @@ const PublicHeader: React.FC = () => {
   const menuItems = [
     { key: '/', label: 'Trang chủ' },
     {
-      key: '/cars', label: 'Xe VinFast', children: [
+      key: '/cars', label: 'Dòng xe cá nhân', children: [
         { key: '/cars/vf3', label: 'VinFast VF 3' },
         { key: '/cars/vf5', label: 'VinFast VF 5 Plus' },
         { key: '/cars/vf6', label: 'VinFast VF 6' },
@@ -41,10 +42,12 @@ const PublicHeader: React.FC = () => {
       ]
     },
     {
-      key: '/scooter', label: 'Xe Máy Điện', children: [ // "Dòng xe VinFast Green" mapped to Scooter/Green for now or just generic
+      key: '/scooter', label: 'Dòng xe VinFast Green', children: [
         { key: '/scooter/evo200', label: 'Evo200' },
         { key: '/scooter/feliz', label: 'Feliz S' },
-        { key: '/scooter/klara', label: 'Klara S' },
+        { key: '/scooter/klara', label: 'Klara S (2022)' },
+        { key: '/scooter/vento', label: 'Vento S' },
+        { key: '/scooter/theon', label: 'Theon S' },
       ]
     },
     { key: '/installment', label: 'Trả góp' },
@@ -76,10 +79,11 @@ const PublicHeader: React.FC = () => {
       <Header className="bg-white shadow-md px-4 md:px-8 h-auto sticky top-0 z-40 flex items-center justify-between py-2">
         {/* Logo Section */}
         <Link href="/" className="flex flex-col items-center leading-none mr-8">
-          <img
-            src="https://vinfasttiengiang.net.vn/wp-content/uploads/2023/04/Logo-VinFast-so-ngang-xanh-duong-1.png"
+          <NextImage
+            src={logo}
             alt="VinFast Tiền Giang"
-            className="h-12 object-contain"
+            className="h-12 w-auto object-contain"
+            priority
           />
         </Link>
 

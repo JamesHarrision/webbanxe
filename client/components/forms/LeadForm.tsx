@@ -1,37 +1,53 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Form, Input, Select, Button, message } from 'antd';
 import { useMutation } from '@tanstack/react-query';
+import { UserOutlined, PhoneOutlined } from '@ant-design/icons';
 import axios from '@/lib/axios';
-import { UserOutlined, PhoneOutlined, CarOutlined } from '@ant-design/icons';
 
 const { Option } = Select;
 const { TextArea } = Input;
 
-interface LeadFormData {
+export interface LeadFormData {
   fullName: string;
   phone: string;
   type: 'TEST_DRIVE' | 'QUOTE' | 'CONSULTATION';
   carModel?: string;
   notes?: string;
+  email?: string; // Optional email if needed
 }
 
-const LeadForm: React.FC = () => {
+interface LeadFormProps {
+  onSuccess?: () => void;
+  initialValues?: Partial<LeadFormData>;
+}
+
+const LeadForm: React.FC<LeadFormProps> = ({ onSuccess, initialValues }) => {
   const [form] = Form.useForm();
 
+  // Update form values when initialValues change
+  useEffect(() => {
+    if (initialValues) {
+      form.setFieldsValue({
+        type: 'QUOTE',
+        ...initialValues
+      });
+    }
+  }, [initialValues, form]);
+
   const mutation = useMutation({
-    mutationFn: (data: LeadFormData) => {
-      // return axios.post('/leads', data);
-      // Mocking the API call for now until backend connection is verified
-      return new Promise((resolve) => setTimeout(resolve, 1000));
+    mutationFn: async (data: LeadFormData) => {
+      const response = await axios.post('/leads', data);
+      return response.data;
     },
     onSuccess: () => {
       message.success('Gửi yêu cầu thành công! Chúng tôi sẽ liên hệ sớm.');
       form.resetFields();
+      if (onSuccess) onSuccess();
     },
-    onError: () => {
-      message.error('Có lỗi xảy ra. Vui lòng thử lại.');
+    onError: (error: any) => {
+      message.error(error.response?.data?.message || 'Có lỗi xảy ra. Vui lòng thử lại.');
     },
   });
 
@@ -40,14 +56,14 @@ const LeadForm: React.FC = () => {
   };
 
   return (
-    <div className="bg-white p-6 rounded-lg shadow-md border border-gray-100">
+    <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
       <h3 className="text-xl font-bold mb-4 text-blue-800 uppercase text-center">Đăng ký lái thử / Báo giá</h3>
       <Form
         form={form}
         name="lead_form"
         layout="vertical"
         onFinish={onFinish}
-        initialValues={{ type: 'QUOTE' }}
+        initialValues={{ type: 'QUOTE', ...initialValues }}
       >
         <Form.Item
           name="fullName"
@@ -83,6 +99,11 @@ const LeadForm: React.FC = () => {
             <Option value="VF7">VinFast VF 7</Option>
             <Option value="VF8">VinFast VF 8</Option>
             <Option value="VF9">VinFast VF 9</Option>
+            <Option value="FelixS">Feliz S</Option>
+            <Option value="KlaraS">Klara S (2022)</Option>
+            <Option value="VentoS">Vento S</Option>
+            <Option value="TheonS">Theon S</Option>
+            <Option value="Evo200">Evo200</Option>
           </Select>
         </Form.Item>
 

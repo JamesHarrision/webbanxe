@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Form, Input, Button, Card, message } from 'antd';
+import { Form, Input, Button, Card, App } from 'antd';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
 import { useRouter } from 'next/navigation';
 import { useAuthStore } from '@/store/authStore';
@@ -9,28 +9,29 @@ import axios from '@/lib/axios';
 
 const AdminLogin = () => {
   const router = useRouter();
+  const { message } = App.useApp();
   const login = useAuthStore((state) => state.login);
   const [loading, setLoading] = React.useState(false);
 
-  const onFinish = async (values: any) => {
+  const onFinish = async (values: { username: string; password: string }) => {
     setLoading(true);
     try {
-      // Replace with actual API call
-      // const response = await axios.post('/admin/login', values);
-      // const { token, user } = response.data;
+      const response = await axios.post('/admin/login', values);
+      const { token, admin } = response.data.data;
 
-      // Mock Login
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      if (values.username === 'admin' && values.password === 'admin') {
-        login('mock-jwt-token', { id: '1', email: 'admin@vinfast.vn', role: 'admin' });
-        message.success('Đăng nhập thành công!');
-        router.push('/admin/dashboard');
-      } else {
-        throw new Error('Sai tài khoản hoặc mật khẩu');
-      }
+      // Save token for axios interceptor
+      localStorage.setItem('accessToken', token);
 
+      // Update store
+      login(token, admin);
+
+      message.success('Đăng nhập thành công!');
+      router.push('/admin/dashboard');
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
-      message.error(error.message || 'Đăng nhập thất bại');
+      const msg = error.response?.data?.message || error.message || 'Đăng nhập thất bại';
+      message.error(msg);
     } finally {
       setLoading(false);
     }

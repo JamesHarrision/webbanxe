@@ -3,8 +3,12 @@ import { deleteCloudinaryImages, extractCloudinaryIdsFromHtml, extractPublicIdFr
 
 // Lấy danh sách xe (Public thì chỉ lấy xe đang active, Admin thì lấy tất cả)
 export const getCars = async (isAdmin: boolean = false) => {
+  // If isAdmin is true, we pass an empty object to where, effectively selecting all.
+  // If isAdmin is false, we filter by isActive: true.
+  const whereClause = isAdmin ? {} : { isActive: true };
+
   return await prisma.car.findMany({
-    where: isAdmin ? {} : { isActive: true },
+    where: whereClause,
     include: { colors: true },
     orderBy: { createdAt: 'desc' },
   });

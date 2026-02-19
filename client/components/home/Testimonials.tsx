@@ -73,7 +73,7 @@ const Testimonials = () => {
                         <StarFilled key={i} className="text-yellow-400" />
                       ))}
                     </div>
-                    <p className="text-gray-600 italic">"{review.comment}"</p>
+                    <p className="text-gray-600 italic">&quot;{review.comment}&quot;</p>
                   </div>
                 </Card>
               </div>
