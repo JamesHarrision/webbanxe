@@ -34,3 +34,31 @@ export const uploadImage = async (req: Request, res: Response): Promise<void> =>
     res.status(500).json({ success: false, message: error.message });
   }
 };
+
+// Upload ảnh từ TinyMCE editor — trả về { location: url } theo đúng format TinyMCE yêu cầu
+export const uploadTinymceImage = async (req: Request, res: Response): Promise<void> => {
+  try {
+    if (!req.file) {
+      res.status(400).json({ success: false, message: 'Vui lòng chọn ảnh' });
+      return;
+    }
+
+    const file = req.file;
+
+    const result: any = await new Promise((resolve, reject) => {
+      const uploadStream = cloudinary.uploader.upload_stream(
+        { folder: 'vinfast_tiengiang' },
+        (error, result) => {
+          if (error) return reject(error);
+          resolve(result);
+        }
+      );
+      Readable.from(file.buffer).pipe(uploadStream);
+    });
+
+    // TinyMCE expects exactly { location: 'url' }
+    res.status(200).json({ location: result.secure_url });
+  } catch (error: any) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};

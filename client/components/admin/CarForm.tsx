@@ -6,6 +6,7 @@ import { UploadOutlined, SaveOutlined, ArrowLeftOutlined, LoadingOutlined, PlusO
 import { useRouter } from 'next/navigation';
 import { carService, Car } from '@/services/car.service';
 import { uploadService } from '@/services/upload.service';
+import RichTextEditor from './RichTextEditor';
 
 const { Option } = Select;
 const { TextArea } = Input;
@@ -409,7 +410,7 @@ const CarForm: React.FC<CarFormProps> = ({ initialValues, isEdit = false }) => {
           name="description"
           label="Mô tả"
         >
-          <TextArea rows={6} placeholder="Mô tả chi tiết về xe..." />
+          <RichTextEditor placeholder="Mô tả chi tiết về xe..." />
         </Form.Item>
 
         <Form.Item>
