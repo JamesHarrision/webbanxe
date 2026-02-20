@@ -220,7 +220,7 @@ const CarForm: React.FC<CarFormProps> = ({ initialValues, isEdit = false }) => {
               style={{ width: '100%' }}
               min={0}
               controls={false}
-              addonAfter="₫"
+              suffix="₫"
               formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, '.')}
               parser={value => (Number(value?.split('.').join('') || 0)) as any}
             />
@@ -294,7 +294,7 @@ const CarForm: React.FC<CarFormProps> = ({ initialValues, isEdit = false }) => {
         {/* ══════════════════════════════════════════════════════ */}
         {/* ═══ Color Variants Section ═══                       */}
         {/* ══════════════════════════════════════════════════════ */}
-        <Divider orientation={"left" as any} style={{ borderColor: '#d1d5db' }}>
+        <Divider titlePlacement="left" style={{ borderColor: '#d1d5db' }}>
           <span className="text-base font-semibold text-gray-700">🎨 Biến thể màu sắc</span>
         </Divider>
 
@@ -312,7 +312,6 @@ const CarForm: React.FC<CarFormProps> = ({ initialValues, isEdit = false }) => {
                     {/* Color Name */}
                     <div className="md:col-span-4">
                       <Form.Item
-                        {...field}
                         name={[field.name, 'colorName']}
                         label="Tên màu"
                         rules={[{ required: true, message: 'Nhập tên màu' }]}
@@ -325,7 +324,6 @@ const CarForm: React.FC<CarFormProps> = ({ initialValues, isEdit = false }) => {
                     {/* Color Hex Picker */}
                     <div className="md:col-span-3">
                       <Form.Item
-                        {...field}
                         name={[field.name, 'colorHex']}
                         label="Mã màu"
                         rules={[{ required: true, message: 'Chọn mã màu' }]}

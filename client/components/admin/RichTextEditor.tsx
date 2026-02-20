@@ -51,9 +51,6 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
         },
         automatic_uploads: true,
         file_picker_types: 'image',
-        // Vietnamese language
-        language: 'vi',
-        language_url: '/tinymce/langs/vi.js',
         // Styling
         content_style: 'body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 14px; }',
         branding: false,
