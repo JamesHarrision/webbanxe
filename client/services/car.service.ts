@@ -1,31 +1,36 @@
 
 import axios from '@/lib/axios';
 
+export interface CarColor {
+  id: number;
+  colorName: string;
+  colorHex: string;
+  imageUrl: string;
+}
+
 export interface Car {
   id: number;
   name: string;
   slug: string;
-  price: number;
-  salePrice?: number;
+  price: number | string;
+  salePrice?: number | string;
   category: string;
   thumbnail: string;
   description?: string;
   isActive: boolean;
-  // colors?: CarColor[];
+  colors?: CarColor[];
   createdAt?: string;
+  updatedAt?: string;
 }
 
 export const carService = {
-  getAll: async (options?: { view?: 'public' | 'admin' }) => {
-    // Admin uses the same endpoint but might get different data if backend handles it
-    // Actually backend `getCars` checks `req.admin`. 
-    // If we use `axios` (instance with interceptor), it will send token.
+  getAll: async (options?: { view?: 'public' | 'admin' }): Promise<Car[]> => {
     const params = options?.view ? { view: options.view } : {};
     const response = await axios.get('/cars', { params });
     return response.data.data;
   },
 
-  getByIdOrSlug: async (idOrSlug: string | number) => {
+  getByIdOrSlug: async (idOrSlug: string | number): Promise<Car> => {
     const response = await axios.get(`/cars/${idOrSlug}`);
     return response.data.data;
   },
