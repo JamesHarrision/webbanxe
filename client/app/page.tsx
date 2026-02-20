@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import PublicLayout from '@/components/layouts/PublicLayout';
 import LeadForm from '@/components/forms/LeadForm';
 import { Button } from 'antd';
@@ -8,9 +8,20 @@ import { ThunderboltOutlined, SafetyCertificateOutlined, DollarOutlined } from '
 import HeroSlider from '@/components/home/HeroSlider';
 import ProductList from '@/components/home/ProductList';
 import Testimonials from '@/components/home/Testimonials';
+import { useModal } from '@/context/ModalContext';
 
 
 export default function Home() {
+  const { openModal } = useModal();
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      openModal({ type: 'QUOTE' });
+    }, 5000);
+
+    return () => clearTimeout(timer);
+  }, [openModal]);
+
   return (
     <PublicLayout>
       <HeroSlider />
@@ -58,7 +69,7 @@ export default function Home() {
             </div>
 
             <div className="md:w-1/2 w-full">
-              <LeadForm />
+              <LeadForm formName="lead_form_page" />
             </div>
           </div>
         </div>

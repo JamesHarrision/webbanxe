@@ -5,6 +5,8 @@ import StyledComponentsRegistry from "../lib/antd-registry";
 import { ConfigProvider, App } from "antd";
 import theme from "../theme/themeConfig";
 import QueryProvider from "@/components/providers/QueryProvider";
+import { ModalProvider } from "@/context/ModalContext";
+import LeadModal from "@/components/modals/LeadModal";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -32,9 +34,12 @@ export default function RootLayout({
         <StyledComponentsRegistry>
           <ConfigProvider theme={theme}>
             <App>
-              <QueryProvider>
-                {children}
-              </QueryProvider>
+              <ModalProvider>
+                <QueryProvider>
+                  {children}
+                  <LeadModal />
+                </QueryProvider>
+              </ModalProvider>
             </App>
           </ConfigProvider>
         </StyledComponentsRegistry>

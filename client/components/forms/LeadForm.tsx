@@ -21,9 +21,10 @@ export interface LeadFormData {
 interface LeadFormProps {
   onSuccess?: () => void;
   initialValues?: Partial<LeadFormData>;
+  formName?: string;
 }
 
-const LeadForm: React.FC<LeadFormProps> = ({ onSuccess, initialValues }) => {
+const LeadForm: React.FC<LeadFormProps> = ({ onSuccess, initialValues, formName = 'lead_form' }) => {
   const [form] = Form.useForm();
 
   // Update form values when initialValues change
@@ -60,7 +61,7 @@ const LeadForm: React.FC<LeadFormProps> = ({ onSuccess, initialValues }) => {
       <h3 className="text-xl font-bold mb-4 text-blue-800 uppercase text-center">Đăng ký lái thử / Báo giá</h3>
       <Form
         form={form}
-        name="lead_form"
+        name={formName}
         layout="vertical"
         onFinish={onFinish}
         initialValues={{ type: 'QUOTE', ...initialValues }}

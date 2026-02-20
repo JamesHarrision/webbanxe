@@ -23,24 +23,29 @@ export default function AdminDashboardLayout({
 }) {
   const router = useRouter();
   const pathname = usePathname();
-  const { isAuthenticated, logout, user } = useAuthStore();
+  const { isAuthenticated, logout, user, _hasHydrated } = useAuthStore();
   const {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
 
   useEffect(() => {
-    if (!isAuthenticated) {
+    if (_hasHydrated && !isAuthenticated) {
       router.push('/admin/login');
     }
-  }, [isAuthenticated, router]);
+  }, [_hasHydrated, isAuthenticated, router]);
+
+  // Chờ hydration xong mới kiểm tra, tránh redirect sai khi reload trang
+  if (!_hasHydrated) {
+    return null; // Đang load session từ localStorage
+  }
 
   if (!isAuthenticated) {
-    return null; // Prevent flash of content
+    return null; // Chưa login, sẽ redirect
   }
 
   return (
-    <Layout className="min-h-screen">
-      <Sider breakpoint="lg" collapsedWidth="0">
+    <Layout className="h-screen text-slate-900" style={{ background: '#f0f2f5' }}>
+      <Sider breakpoint="lg" collapsedWidth="0" style={{ height: '100vh', position: 'sticky', top: 0, left: 0, overflow: 'auto' }}>
         <div className="demo-logo-vertical p-4 text-white text-xl font-bold text-center">
           VinFast Admin
         </div>
@@ -77,9 +82,9 @@ export default function AdminDashboardLayout({
           ]}
         />
       </Sider>
-      <Layout>
-        <Header style={{ padding: 0, background: colorBgContainer }} className="flex justify-between items-center px-4">
-          <h2 className="text-lg font-semibold ml-4">Xin chào, {user?.role}</h2>
+      <Layout style={{ background: '#f0f2f5', display: 'flex', flexDirection: 'column', height: '100vh', overflow: 'hidden' }}>
+        <Header style={{ padding: 0, background: colorBgContainer, flexShrink: 0 }} className="flex justify-between items-center px-4 shadow-sm z-10">
+          <h2 className="text-lg font-semibold ml-4">Xin chào, {user?.email}</h2>
           <Button
             type="text"
             icon={<LogoutOutlined />}
@@ -89,13 +94,14 @@ export default function AdminDashboardLayout({
             Đăng xuất
           </Button>
         </Header>
-        <Content style={{ margin: '24px 16px 0' }}>
+        <Content style={{ margin: '24px 16px', flex: 1, overflow: 'auto' }}>
           <div
             style={{
               padding: 24,
-              minHeight: 360,
+              minHeight: '100%',
               background: colorBgContainer,
               borderRadius: borderRadiusLG,
+              boxShadow: '0 1px 2px 0 rgba(0, 0, 0, 0.03)',
             }}
           >
             {children}

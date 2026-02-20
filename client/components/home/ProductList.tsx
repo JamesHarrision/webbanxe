@@ -1,7 +1,6 @@
 'use client';
 
 import React from 'react';
-import { Card, Button, Row, Col } from 'antd';
 import { CarOutlined } from '@ant-design/icons';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -26,33 +25,24 @@ const ProductList = () => {
   const { openModal } = useModal();
 
   // Helper to format currency
-  const formatCurrency = (value: number | string) => {
-    if (value === undefined || value === null) return '';
+  const formatCurrency = (value: number | string | null | undefined) => {
+    if (value === null || value === undefined || value === '') return '';
 
-    // Handle string inputs carefully
-    let numValue = value;
-    if (typeof value === 'string') {
-      const clean = value.replace(/\D/g, '');
-      if (clean) {
-        numValue = parseInt(clean, 10);
-      } else {
-        return value;
-      }
-    }
+    // parseFloat handles both JS numbers and Prisma Decimal strings ("100000000.00")
+    const num = typeof value === 'number' ? value : parseFloat(String(value).replace(/,/g, ''));
+    if (isNaN(num)) return String(value);
 
-    if (typeof numValue === 'number' && !isNaN(numValue)) {
-      return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(numValue);
-    }
-
-    return String(value);
+    return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(num);
   };
 
   // Helper to get raw number for comparison
-  const getNumericPrice = (value: number | string): number => {
+  const getNumericPrice = (value: number | string | null | undefined): number => {
+    if (value === null || value === undefined) return 0;
     if (typeof value === 'number') return value;
     if (typeof value === 'string') {
-      const clean = value.replace(/\D/g, '');
-      return parseInt(clean, 10) || 0;
+      // Prisma Decimal comes as "100000000.00" — parseFloat handles this correctly
+      const parsed = parseFloat(value.replace(/,/g, ''));
+      return isNaN(parsed) ? 0 : parsed;
     }
     return 0;
   }
@@ -82,69 +72,98 @@ const ProductList = () => {
 
     return (
       <div className="mb-16">
-        <div className="text-center mb-8">
-          <h3 className="text-2xl font-bold uppercase text-[#0f4c81] mb-2">{title}</h3>
+        <div className="text-center mb-10">
+          <h3 className="text-2xl font-bold uppercase text-[#0f4c81] mb-3">{title}</h3>
           <div className="w-16 h-1 bg-orange-500 mx-auto"></div>
         </div>
-        <Row gutter={[24, 24]}>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {productList.map((car) => {
             const priceNum = getNumericPrice(car.price);
             const salePriceNum = car.salePrice ? getNumericPrice(car.salePrice) : 0;
             const hasDiscount = salePriceNum > 0 && salePriceNum < priceNum;
 
             return (
-              <Col xs={24} sm={12} md={8} lg={6} key={car.id}>
-                <Card
-                  hoverable
-                  cover={
-                    <div className="p-4 bg-white h-48 flex items-center justify-center overflow-hidden">
-                      <div className="relative w-full h-full">
-                        <Image
-                          alt={car.name}
-                          src={car.thumbnail || car.image || '/placeholder.svg'}
-                          fill
-                          className="object-contain hover:scale-110 transition-transform duration-500"
-                          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                        />
-                      </div>
+              <div
+                key={car.id}
+                className="group relative bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-2xl flex flex-col"
+                style={{ transition: 'transform 0.3s ease, box-shadow 0.3s ease' }}
+                onMouseEnter={e => (e.currentTarget.style.transform = 'translateY(-6px)')}
+                onMouseLeave={e => (e.currentTarget.style.transform = 'translateY(0)')}
+              >
+                {/* Image area */}
+                <div className="relative w-full h-52 bg-gradient-to-br from-slate-100 to-blue-50 overflow-hidden">
+                  <Image
+                    alt={car.name}
+                    src={car.thumbnail || car.image || '/placeholder.svg'}
+                    fill
+                    className="object-contain p-4 group-hover:scale-110 transition-transform duration-500"
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
+                  />
+                  {/* Gradient overlay on hover */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#0f4c81]/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+
+                  {/* Discount badge */}
+                  {hasDiscount && (
+                    <div className="absolute top-3 left-3 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full shadow-md uppercase tracking-wide">
+                      Khuyến mãi
                     </div>
-                  }
-                  className="h-full flex flex-col justify-between shadow-sm hover:shadow-xl border-t-2 border-transparent hover:border-blue-500 transition-all"
-                  actions={[
-                    <Button
-                      type="link"
-                      key="quote"
-                      className="text-blue-600 font-semibold hover:text-blue-800"
+                  )}
+
+                  {/* Brand tag */}
+                  <div className="absolute top-3 right-3 bg-[#0f4c81]/80 text-white text-xs px-2 py-1 rounded-full backdrop-blur-sm">
+                    VinFast
+                  </div>
+                </div>
+
+                {/* Content */}
+                <div className="flex flex-col flex-1 p-4">
+                  <h4 className="text-base font-bold text-gray-900 text-center mb-3 group-hover:text-[#0f4c81] transition-colors line-clamp-2">
+                    {car.name}
+                  </h4>
+
+                  {/* Price block */}
+                  <div className="text-center mb-4 flex-1 flex flex-col justify-center">
+                    {hasDiscount ? (
+                      <>
+                        <div className="text-gray-400 line-through text-sm font-medium mb-0.5">
+                          {formatCurrency(car.price)}
+                        </div>
+                        <div className="text-orange-500 font-extrabold text-xl leading-tight">
+                          {formatCurrency(car.salePrice)}
+                        </div>
+                        <div className="text-green-600 text-xs font-semibold mt-1">
+                          Tiết kiệm {formatCurrency(priceNum - salePriceNum)}
+                        </div>
+                      </>
+                    ) : (
+                      <div className="text-orange-500 font-extrabold text-xl">
+                        {formatCurrency(car.price)}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Divider */}
+                  <div className="h-px bg-gray-100 mb-3" />
+
+                  {/* Action buttons */}
+                  <div className="flex gap-2">
+                    <button
                       onClick={() => openModal({ type: 'QUOTE', carModel: car.name })}
+                      className="flex-1 bg-[#0f4c81] hover:bg-[#1a6ab5] text-white text-sm font-semibold py-2 px-3 rounded-xl transition-colors duration-200 cursor-pointer"
                     >
                       Báo giá
-                    </Button>,
-                    <Link href={`/cars/${car.slug || car.id}`} key="detail">
-                      <Button type="link" className="text-gray-500 hover:text-blue-600">Chi tiết</Button>
-                    </Link>,
-                  ]}
-                >
-                  <Card.Meta
-                    title={<div className="text-lg font-bold text-gray-800 text-center">{car.name}</div>}
-                    description={
-                      <div className="text-center mt-2 h-16 flex flex-col justify-center">
-                        {/* Price Display Logic */}
-                        {hasDiscount && (
-                          <div className="text-gray-400 line-through text-sm">
-                            {formatCurrency(car.price)}
-                          </div>
-                        )}
-                        <div className="text-orange-600 font-bold text-xl">
-                          {formatCurrency(hasDiscount ? car.salePrice : car.price)}
-                        </div>
-                      </div>
-                    }
-                  />
-                </Card>
-              </Col>
+                    </button>
+                    <Link href={`/cars/${car.slug || car.id}`} className="flex-1">
+                      <button className="w-full border-2 border-[#0f4c81] text-[#0f4c81] hover:bg-[#0f4c81] hover:text-white text-sm font-semibold py-2 px-3 rounded-xl transition-all duration-200 cursor-pointer">
+                        Chi tiết
+                      </button>
+                    </Link>
+                  </div>
+                </div>
+              </div>
             );
           })}
-        </Row>
+        </div>
       </div>
     );
   };

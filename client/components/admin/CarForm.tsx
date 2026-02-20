@@ -26,7 +26,12 @@ const CarForm: React.FC<CarFormProps> = ({ initialValues, isEdit = false }) => {
 
   useEffect(() => {
     if (initialValues) {
-      form.setFieldsValue(initialValues);
+      form.setFieldsValue({
+        ...initialValues,
+        // Prisma trả về Decimal dạng string ("100000000.00") → convert sang number cho InputNumber
+        price: initialValues.price ? Number(initialValues.price) : undefined,
+        salePrice: initialValues.salePrice ? Number(initialValues.salePrice) : undefined,
+      });
       setThumbnailUrl(initialValues.thumbnail || '');
     }
   }, [initialValues, form]);
@@ -38,6 +43,9 @@ const CarForm: React.FC<CarFormProps> = ({ initialValues, isEdit = false }) => {
       const payload = {
         ...values,
         thumbnail: thumbnailUrl,
+        price: Number(values.price),
+        // Gửi null nếu salePrice trống/0 để xóa giá khuyến mãi trong DB
+        salePrice: values.salePrice ? Number(values.salePrice) : null,
       };
 
       if (isEdit && initialValues?.id) {
@@ -127,8 +135,11 @@ const CarForm: React.FC<CarFormProps> = ({ initialValues, isEdit = false }) => {
           >
             <InputNumber
               style={{ width: '100%' }}
-              formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',') + ' VND'}
-              parser={value => value?.replace(/\$\s?|(,*)|(\s?VND)/g, '') as unknown as number}
+              min={0}
+              controls={false}
+              addonAfter="₫"
+              formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, '.')}
+              parser={value => (Number(value?.split('.').join('') || 0)) as any}
             />
           </Form.Item>
 
@@ -138,8 +149,11 @@ const CarForm: React.FC<CarFormProps> = ({ initialValues, isEdit = false }) => {
           >
             <InputNumber
               style={{ width: '100%' }}
-              formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',') + ' VND'}
-              parser={value => value?.replace(/\$\s?|(,*)|(\s?VND)/g, '') as unknown as number}
+              min={0}
+              controls={false}
+              addonAfter="₫"
+              formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, '.')}
+              parser={value => (Number(value?.split('.').join('') || 0)) as any}
             />
           </Form.Item>
 

@@ -28,7 +28,6 @@ const LeadModal: React.FC = () => {
       open={isOpen}
       onCancel={closeModal}
       footer={null} // No default footer, the form has the submit button
-      title={<div className="text-center text-xl font-bold text-[#0f4c81] uppercase">Đăng ký tư vấn & Báo giá</div>}
       destroyOnHidden
       centered
       width={700}

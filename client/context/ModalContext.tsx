@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useCallback, ReactNode } from 'react';
 
 interface ModalData {
   type?: 'TEST_DRIVE' | 'QUOTE' | 'CONSULTATION';
@@ -21,15 +21,15 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [modalData, setModalData] = useState<ModalData | null>(null);
 
-  const openModal = (data?: ModalData) => {
+  const openModal = useCallback((data?: ModalData) => {
     setModalData(data || null);
     setIsOpen(true);
-  };
+  }, []);
 
-  const closeModal = () => {
+  const closeModal = useCallback(() => {
     setIsOpen(false);
     setModalData(null);
-  };
+  }, []);
 
   return (
     <ModalContext.Provider value={{ isOpen, modalData, openModal, closeModal }}>
