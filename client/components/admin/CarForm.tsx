@@ -1,15 +1,32 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { Form, Input, InputNumber, Select, Switch, Button, Upload, App, Space, Image as AntImage, Spin } from 'antd';
-import { UploadOutlined, SaveOutlined, ArrowLeftOutlined, LoadingOutlined } from '@ant-design/icons';
+import { Form, Input, InputNumber, Select, Switch, Button, Upload, App, Image as AntImage, Spin, Divider, Card } from 'antd';
+import { UploadOutlined, SaveOutlined, ArrowLeftOutlined, LoadingOutlined, PlusOutlined, DeleteOutlined } from '@ant-design/icons';
 import { useRouter } from 'next/navigation';
 import { carService, Car } from '@/services/car.service';
 import { uploadService } from '@/services/upload.service';
-import Image from 'next/image';
 
 const { Option } = Select;
 const { TextArea } = Input;
+
+// ── Custom color hex picker compatible with Ant Design Form.Item ──
+const ColorHexPicker: React.FC<{ value?: string; onChange?: (val: string) => void }> = ({ value = '#000000', onChange }) => (
+  <div className="flex items-center gap-2">
+    <input
+      type="color"
+      value={value}
+      onChange={(e) => onChange?.(e.target.value)}
+      className="w-10 h-10 rounded cursor-pointer border border-gray-300 p-0.5"
+    />
+    <Input
+      value={value}
+      onChange={(e) => onChange?.(e.target.value)}
+      placeholder="#FF0000"
+      className="flex-1"
+    />
+  </div>
+);
 
 interface CarFormProps {
   initialValues?: Partial<Car>;
@@ -24,15 +41,36 @@ const CarForm: React.FC<CarFormProps> = ({ initialValues, isEdit = false }) => {
   const [uploading, setUploading] = useState(false);
   const [thumbnailUrl, setThumbnailUrl] = useState<string>(initialValues?.thumbnail || '');
 
+  // ── Color variant state ──
+  // Tracks uploaded image URLs per Form.List row key
+  const [colorImageUrls, setColorImageUrls] = useState<Record<number, string>>({});
+  // Tracks upload-in-progress per row key
+  const [colorUploading, setColorUploading] = useState<Record<number, boolean>>({});
+
   useEffect(() => {
     if (initialValues) {
+      // Pre-populate color variants when editing
+      const colorsData = initialValues.colors?.map((c) => ({
+        colorName: c.colorName,
+        colorHex: c.colorHex,
+      })) || [];
+
       form.setFieldsValue({
         ...initialValues,
-        // Prisma trả về Decimal dạng string ("100000000.00") → convert sang number cho InputNumber
         price: initialValues.price ? Number(initialValues.price) : undefined,
         salePrice: initialValues.salePrice ? Number(initialValues.salePrice) : undefined,
+        colors: colorsData,
       });
       setThumbnailUrl(initialValues.thumbnail || '');
+
+      // Pre-populate image URLs from existing color variants
+      if (initialValues.colors) {
+        const urls: Record<number, string> = {};
+        initialValues.colors.forEach((c, index) => {
+          if (c.imageUrl) urls[index] = c.imageUrl;
+        });
+        setColorImageUrls(urls);
+      }
     }
   }, [initialValues, form]);
 
@@ -44,8 +82,13 @@ const CarForm: React.FC<CarFormProps> = ({ initialValues, isEdit = false }) => {
         ...values,
         thumbnail: thumbnailUrl,
         price: Number(values.price),
-        // Gửi null nếu salePrice trống/0 để xóa giá khuyến mãi trong DB
         salePrice: values.salePrice ? Number(values.salePrice) : null,
+        // Map colors from form values + uploaded image URLs
+        colors: (values.colors || []).map((color: any, index: number) => ({
+          colorName: color.colorName,
+          colorHex: color.colorHex,
+          imageUrl: colorImageUrls[index] || '',
+        })),
       };
 
       if (isEdit && initialValues?.id) {
@@ -64,23 +107,11 @@ const CarForm: React.FC<CarFormProps> = ({ initialValues, isEdit = false }) => {
   };
 
   /* eslint-disable @typescript-eslint/no-explicit-any */
-  const handleUpload = async (info: any) => {
-    const { status } = info.file;
-    if (status !== 'uploading') {
-      // console.log(info.file, info.fileList);
-    }
-    if (status === 'done') {
-      // Antd upload default behavior
-    }
-  };
-
-  /* eslint-disable @typescript-eslint/no-explicit-any */
   const customUploadRequest = async (options: any) => {
     const { onSuccess, onError, file } = options;
     setUploading(true);
     try {
       const response = await uploadService.uploadImage(file);
-      // Assuming response is the URL string or { url: ... }
       const url = response.url || response;
       setThumbnailUrl(url);
       onSuccess("Ok");
@@ -91,6 +122,57 @@ const CarForm: React.FC<CarFormProps> = ({ initialValues, isEdit = false }) => {
     } finally {
       setUploading(false);
     }
+  };
+
+  // ── Per-color-row upload handler ──
+  const createColorUploadRequest = (fieldKey: number) => async (options: any) => {
+    const { onSuccess, onError, file } = options;
+    setColorUploading((prev) => ({ ...prev, [fieldKey]: true }));
+    try {
+      const response = await uploadService.uploadImage(file);
+      const url = response.url || response;
+      setColorImageUrls((prev) => ({ ...prev, [fieldKey]: url }));
+      onSuccess("Ok");
+      message.success(`Upload ảnh màu thành công`);
+    } catch (err) {
+      onError({ err });
+      message.error('Upload ảnh màu thất bại');
+    } finally {
+      setColorUploading((prev) => ({ ...prev, [fieldKey]: false }));
+    }
+  };
+
+  // When a color row is removed, shift image URLs to keep indices in sync
+  const handleRemoveColor = (removeFn: (index: number) => void, fieldName: number, fields: any[]) => {
+    removeFn(fieldName);
+
+    // Rebuild colorImageUrls with shifted indices
+    setColorImageUrls((prev) => {
+      const newUrls: Record<number, string> = {};
+      const sortedKeys = Object.keys(prev).map(Number).sort((a, b) => a - b);
+
+      let newIndex = 0;
+      for (const key of sortedKeys) {
+        if (key === fieldName) continue; // skip the removed row
+        newUrls[newIndex] = prev[key];
+        newIndex++;
+      }
+      return newUrls;
+    });
+
+    // Also clean up uploading state
+    setColorUploading((prev) => {
+      const newState: Record<number, boolean> = {};
+      const sortedKeys = Object.keys(prev).map(Number).sort((a, b) => a - b);
+
+      let newIndex = 0;
+      for (const key of sortedKeys) {
+        if (key === fieldName) continue;
+        newState[newIndex] = prev[key];
+        newIndex++;
+      }
+      return newState;
+    });
   };
 
   return (
@@ -207,6 +289,121 @@ const CarForm: React.FC<CarFormProps> = ({ initialValues, isEdit = false }) => {
             </Upload>
           </div>
         </Form.Item>
+
+        {/* ══════════════════════════════════════════════════════ */}
+        {/* ═══ Color Variants Section ═══                       */}
+        {/* ══════════════════════════════════════════════════════ */}
+        <Divider orientation={"left" as any} style={{ borderColor: '#d1d5db' }}>
+          <span className="text-base font-semibold text-gray-700">🎨 Biến thể màu sắc</span>
+        </Divider>
+
+        <Form.List name="colors">
+          {(fields, { add, remove }) => (
+            <div className="flex flex-col gap-4">
+              {fields.map((field) => (
+                <Card
+                  key={field.key}
+                  size="small"
+                  className="border-gray-200 bg-gray-50/50"
+                  styles={{ body: { padding: '16px' } }}
+                >
+                  <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-start">
+                    {/* Color Name */}
+                    <div className="md:col-span-4">
+                      <Form.Item
+                        {...field}
+                        name={[field.name, 'colorName']}
+                        label="Tên màu"
+                        rules={[{ required: true, message: 'Nhập tên màu' }]}
+                        className="mb-0"
+                      >
+                        <Input placeholder="VD: Đỏ Mystique" />
+                      </Form.Item>
+                    </div>
+
+                    {/* Color Hex Picker */}
+                    <div className="md:col-span-3">
+                      <Form.Item
+                        {...field}
+                        name={[field.name, 'colorHex']}
+                        label="Mã màu"
+                        rules={[{ required: true, message: 'Chọn mã màu' }]}
+                        className="mb-0"
+                      >
+                        <ColorHexPicker />
+                      </Form.Item>
+                    </div>
+
+                    {/* Image Upload */}
+                    <div className="md:col-span-4">
+                      <div className="mb-0">
+                        <label className="block text-sm mb-1.5 font-medium">Ảnh màu xe</label>
+                        <div className="flex items-center gap-3">
+                          {colorUploading[field.name] ? (
+                            <div className="w-16 h-16 border rounded flex justify-center items-center bg-white">
+                              <Spin indicator={<LoadingOutlined style={{ fontSize: 16 }} spin />} />
+                            </div>
+                          ) : colorImageUrls[field.name] ? (
+                            <div className="w-16 h-16 border rounded overflow-hidden flex-shrink-0">
+                              <AntImage
+                                src={colorImageUrls[field.name]}
+                                alt="Color"
+                                width={64}
+                                height={64}
+                                className="object-cover"
+                              />
+                            </div>
+                          ) : (
+                            <div className="w-16 h-16 border rounded border-dashed flex justify-center items-center bg-white text-gray-300">
+                              <UploadOutlined style={{ fontSize: 20 }} />
+                            </div>
+                          )}
+                          <Upload
+                            customRequest={createColorUploadRequest(field.name)}
+                            showUploadList={false}
+                            accept="image/*"
+                            disabled={colorUploading[field.name]}
+                          >
+                            <Button
+                              size="small"
+                              icon={<UploadOutlined />}
+                              loading={colorUploading[field.name]}
+                            >
+                              {colorUploading[field.name] ? 'Đang tải...' : 'Chọn ảnh'}
+                            </Button>
+                          </Upload>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Remove Button */}
+                    <div className="md:col-span-1 flex items-end justify-end md:justify-center pb-1">
+                      <Button
+                        type="text"
+                        danger
+                        icon={<DeleteOutlined />}
+                        onClick={() => handleRemoveColor(remove, field.name, fields)}
+                        title="Xóa biến thể"
+                        className="mt-6"
+                      />
+                    </div>
+                  </div>
+                </Card>
+              ))}
+
+              <Button
+                type="dashed"
+                onClick={() => add({ colorName: '', colorHex: '#000000' })}
+                icon={<PlusOutlined />}
+                className="w-full md:w-auto"
+              >
+                Thêm biến thể màu
+              </Button>
+            </div>
+          )}
+        </Form.List>
+
+        <Divider style={{ borderColor: '#d1d5db' }} />
 
         <Form.Item
           name="description"
