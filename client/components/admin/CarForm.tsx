@@ -149,8 +149,8 @@ const CarForm: React.FC<CarFormProps> = ({ initialValues, isEdit = false }) => {
             rules={[{ required: true }]}
           >
             <Select>
-              <Option value="car">Ô tô điện</Option>
-              <Option value="scooter">Xe máy điện</Option>
+              <Option value="car">Dòng xe cá nhân</Option>
+              <Option value="scooter">Dòng xe VinFast Green</Option>
               <Option value="accessory">Phụ kiện</Option>
             </Select>
           </Form.Item>

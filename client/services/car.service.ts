@@ -16,11 +16,12 @@ export interface Car {
 }
 
 export const carService = {
-  getAll: async (_isAdmin = false) => {
+  getAll: async (options?: { view?: 'public' | 'admin' }) => {
     // Admin uses the same endpoint but might get different data if backend handles it
     // Actually backend `getCars` checks `req.admin`. 
     // If we use `axios` (instance with interceptor), it will send token.
-    const response = await axios.get('/cars');
+    const params = options?.view ? { view: options.view } : {};
+    const response = await axios.get('/cars', { params });
     return response.data.data;
   },
 

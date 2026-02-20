@@ -24,3 +24,22 @@ export const verifyToken = (req: AuthRequest, res: Response, next: NextFunction)
     res.status(403).json({ success: false, message: 'Token không hợp lệ hoặc đã hết hạn!' });
   }
 };
+
+export const optionalVerifyToken = (req: AuthRequest, res: Response, next: NextFunction): void => {
+  const authHeader = req.headers['authorization'];
+
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    next();
+    return;
+  }
+
+  const token = authHeader.split(' ')[1];
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as { id: number; username: string };
+    req.admin = decoded;
+    next();
+  } catch (error) {
+    next();
+  }
+};

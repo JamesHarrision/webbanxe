@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Layout, Menu, Drawer, Button } from 'antd';
 import Link from 'next/link';
 import NextImage from 'next/image';
@@ -14,6 +14,7 @@ import {
   DownOutlined
 } from '@ant-design/icons';
 import { usePathname } from 'next/navigation';
+import { carService, Car } from '@/services/car.service';
 
 const { Header } = Layout;
 
@@ -27,28 +28,41 @@ const TikTokIcon = () => (
 const PublicHeader: React.FC = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const pathname = usePathname();
+  const [cars, setCars] = useState<Car[]>([]);
+
+  useEffect(() => {
+    const fetchCars = async () => {
+      try {
+        const data = await carService.getAll({ view: 'public' });
+        setCars(data);
+      } catch (error) {
+        console.error('Failed to fetch cars for menu:', error);
+      }
+    };
+    fetchCars();
+  }, []);
+
+  const carItems = cars
+    .filter((c) => c.category === 'car' || c.category === 'Dòng xe cá nhân') // Handle both old and new values just in case
+    .map((c) => ({ key: `/cars/${c.slug}`, label: c.name }));
+
+  const scooterItems = cars
+    .filter((c) => c.category === 'scooter' || c.category === 'Dòng xe VinFast Green')
+    .map((c) => ({ key: `/cars/${c.slug}`, label: c.name }));
 
   const menuItems = [
     { key: '/', label: 'Trang chủ' },
     {
-      key: '/cars', label: 'Dòng xe cá nhân', children: [
-        { key: '/cars/vf3', label: 'VinFast VF 3' },
-        { key: '/cars/vf5', label: 'VinFast VF 5 Plus' },
-        { key: '/cars/vf6', label: 'VinFast VF 6' },
-        { key: '/cars/vfe34', label: 'VinFast VF e34' },
-        { key: '/cars/vf7', label: 'VinFast VF 7' },
-        { key: '/cars/vf8', label: 'VinFast VF 8' },
-        { key: '/cars/vf9', label: 'VinFast VF 9' },
-      ]
+      key: '/cars',
+      label: 'Dòng xe cá nhân',
+      children: carItems.length > 0 ? carItems : undefined
+      // If no children, it acts as a normal link or empty? 
+      // Antd Menu handles empty children fine usually, but let's keep it safe.
     },
     {
-      key: '/scooter', label: 'Dòng xe VinFast Green', children: [
-        { key: '/scooter/evo200', label: 'Evo200' },
-        { key: '/scooter/feliz', label: 'Feliz S' },
-        { key: '/scooter/klara', label: 'Klara S (2022)' },
-        { key: '/scooter/vento', label: 'Vento S' },
-        { key: '/scooter/theon', label: 'Theon S' },
-      ]
+      key: '/scooter',
+      label: 'Dòng xe VinFast Green',
+      children: scooterItems.length > 0 ? scooterItems : undefined
     },
     { key: '/installment', label: 'Trả góp' },
     { key: '/cost-estimate', label: 'Dự toán chi phí' },
@@ -92,7 +106,7 @@ const PublicHeader: React.FC = () => {
           <ul className="flex gap-1 items-center m-0 p-0 list-none">
             {menuItems.map((item) => (
               <li key={item.key} className="relative group">
-                {item.children ? (
+                {item.children && item.children.length > 0 ? (
                   <span className="px-4 py-3 cursor-pointer text-gray-700 font-medium hover:text-[#1890ff] flex items-center gap-1 transition-colors">
                     {item.label} <DownOutlined className="text-xs" />
                   </span>
@@ -106,7 +120,7 @@ const PublicHeader: React.FC = () => {
                 )}
 
                 {/* Dropdown */}
-                {item.children && (
+                {item.children && item.children.length > 0 && (
                   <div className="absolute top-full left-0 bg-white shadow-lg rounded-b-md py-2 w-56 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 transform translate-y-2 group-hover:translate-y-0 border-t-2 border-[#1890ff]">
                     {item.children.map((child) => (
                       <Link
@@ -146,11 +160,11 @@ const PublicHeader: React.FC = () => {
           selectedKeys={[pathname]}
           items={menuItems.map(item => ({
             key: item.key,
-            label: item.children ? item.label : <Link href={item.key} onClick={() => setMobileMenuOpen(false)}>{item.label}</Link>,
-            children: item.children?.map(child => ({
+            label: (item.children && item.children.length > 0) ? item.label : <Link href={item.key} onClick={() => setMobileMenuOpen(false)}>{item.label}</Link>,
+            children: (item.children && item.children.length > 0) ? item.children.map(child => ({
               key: child.key,
               label: <Link href={child.key} onClick={() => setMobileMenuOpen(false)}>{child.label}</Link>
-            }))
+            })) : undefined
           }))}
         />
       </Drawer>

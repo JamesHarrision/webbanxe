@@ -1,13 +1,15 @@
 import { Router } from 'express';
 import { getCars, getCar, createCar, updateCar, deleteCar } from '../controllers/car.controller';
-import { verifyToken } from '../middlewares/auth.middleware';
+import { verifyToken, optionalVerifyToken } from '../middlewares/auth.middleware';
 
 const router = Router();
 
 // =====================================
 // PUBLIC ROUTES (Dùng cho Frontend hiển thị)
 // =====================================
-router.get('/', getCars); // Lấy danh sách (chỉ lấy xe active)
+// Custom: Dùng optionalVerifyToken để nếu là Admin thì lấy được hết xe (cả ẩn)
+
+router.get('/', optionalVerifyToken, getCars); // Lấy danh sách (chỉ lấy xe active nếu khách, full nếu admin)
 router.get('/:idOrSlug', getCar); // Lấy chi tiết 1 xe theo ID hoặc Slug
 
 // =====================================

@@ -5,7 +5,13 @@ import * as carService from '../services/car.service';
 export const getCars = async (req: Request, res: Response): Promise<void> => {
   try {
     // Kiểm tra xem request này có đi qua middleware verifyToken không (có req.admin)
-    const isAdmin = (req as any).admin ? true : false;
+    let isAdmin = (req as any).admin ? true : false;
+
+    // Nếu có query param view=public thì coi như là user thường (chỉ lấy xe active)
+    if (req.query.view === 'public') {
+      isAdmin = false;
+    }
+
     const cars = await carService.getCars(isAdmin);
 
     res.status(200).json({ success: true, data: cars });
