@@ -20,5 +20,5 @@ export const formatCurrency = (value: number | string | null | undefined): strin
   const num = typeof value === 'number' ? value : parseFloat(String(value).replace(/,/g, ''));
   if (isNaN(num)) return String(value);
 
-  return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(num);
+  return new Intl.NumberFormat('vi-VN').format(num) + ' Đ';
 };

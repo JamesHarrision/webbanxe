@@ -105,19 +105,40 @@ const PublicFooter: React.FC = () => {
               <div className="flex items-start gap-3">
                 <EnvironmentFilled className="text-[#1890ff] mt-1" />
                 <div>
-                  <div className="font-semibold text-gray-300">Head Office:</div>
+                  <div className="font-semibold text-gray-300">Trụ sở chính:</div>
                   <div className="text-gray-400">{settings?.ADDRESS}</div>
                 </div>
               </div>
 
-              {branches.map((branch, idx) => (
-                <div key={idx} className="flex items-start gap-3 pl-7">
-                  <span className="text-[#1890ff]">•</span>
-                  <div className="text-gray-400">
-                    {branch.toLowerCase().startsWith('chi nhánh') ? branch : `Chi nhánh ${idx + 1}: ${branch}`}
-                  </div>
+              {settings?.ABOUT_TEXT && (
+                <p className="text-gray-400 italic leading-relaxed">
+                  "{settings.ABOUT_TEXT}"
+                </p>
+              )}
+
+              {settings?.FOUNDER_NAME && (
+                <div className="pt-2">
+                  <p className="text-white font-semibold mb-0">{settings.FOUNDER_NAME}</p>
+                  <p className="text-[#1890ff] text-xs font-medium uppercase tracking-wider">{settings.ROLE || 'Đại diện kinh doanh'}</p>
                 </div>
-              ))}
+              )}
+
+              {branches.length > 0 && (
+                <div className="space-y-3 pt-2">
+                  <div className="font-semibold text-gray-300 flex items-center gap-2">
+                    <EnvironmentFilled className="text-[#1890ff] text-xs" />
+                    <span>Các chi nhánh khác:</span>
+                  </div>
+                  {branches.map((branch, idx) => (
+                    <div key={idx} className="flex items-start gap-3 pl-6">
+                      <span className="text-[#1890ff] text-xs mt-1">•</span>
+                      <div className="text-gray-400 text-xs">
+                        {branch}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
 
               <div className="mt-6">
                 <h3 className="text-white font-bold text-base border-b border-gray-700 pb-2 mb-4 inline-block">Giờ mở cửa</h3>
