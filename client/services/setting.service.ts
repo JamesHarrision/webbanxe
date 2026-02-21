@@ -14,6 +14,7 @@ export interface PublicSettings {
   ABOUT_TEXT?: string;
   DISCLAIMER?: string;
   BRANCHES?: string; // JSON string array
+  OPENING_HOURS?: string;
 }
 
 export const settingService = {

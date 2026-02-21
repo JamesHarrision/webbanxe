@@ -38,4 +38,9 @@ export const leadService = {
     const response = await axios.delete(`/leads/${id}`);
     return response.data;
   },
+
+  submit: async (data: Partial<Lead>) => {
+    const response = await axios.post('/leads', data);
+    return response.data;
+  },
 };
