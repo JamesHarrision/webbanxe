@@ -21,8 +21,8 @@ const MOCK_CARS = [
   { id: 4, name: 'VinFast VF 7', price: '850000000', image: '/placeholder.svg', category: 'car', slug: 'vf-7' },
   { id: 5, name: 'VinFast VF 8', price: '1090000000', image: '/placeholder.svg', category: 'car', slug: 'vf-8' },
   { id: 6, name: 'VinFast VF 9', price: '1491000000', image: '/placeholder.svg', category: 'car', slug: 'vf-9' },
-  { id: 7, name: 'Klara S (2022)', price: '35000000', image: '/placeholder.svg', category: 'scooter', slug: 'klara-s' },
-  { id: 8, name: 'Feliz S', price: '27000000', image: '/placeholder.svg', category: 'scooter', slug: 'feliz-s' },
+  { id: 7, name: 'Klara S (2022)', price: '35000000', image: '/placeholder.svg', category: 'greencar', slug: 'klara-s' },
+  { id: 8, name: 'Feliz S', price: '27000000', image: '/placeholder.svg', category: 'greencar', slug: 'feliz-s' },
 ];
 
 const formatCurrency = (value: number | string | null | undefined) => {
@@ -128,7 +128,7 @@ const ProductList = () => {
 
   const displayCars = cars.length > 0 ? cars : MOCK_CARS;
   const personalCars = displayCars.filter(c => c.category === 'car' || c.category === 'Dòng xe cá nhân');
-  const greenCars = displayCars.filter(c => c.category === 'scooter' || c.category === 'Dòng xe VinFast Green');
+  const greenCars = displayCars.filter(c => c.category === 'greencar' || c.category === 'Dòng xe VinFast Green');
 
   const renderSection = (title: string, list: any[]) => {
     if (list.length === 0) return null;

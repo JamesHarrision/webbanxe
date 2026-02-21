@@ -53,8 +53,8 @@ const PublicHeader: React.FC = () => {
     .filter((c) => c.category === 'car' || c.category === 'Dòng xe cá nhân') // Handle both old and new values just in case
     .map((c) => ({ key: `/cars/${c.slug}`, label: c.name }));
 
-  const scooterItems = cars
-    .filter((c) => c.category === 'scooter' || c.category === 'Dòng xe VinFast Green')
+  const greencarItems = cars
+    .filter((c) => c.category === 'greencar' || c.category === 'Dòng xe VinFast Green')
     .map((c) => ({ key: `/cars/${c.slug}`, label: c.name }));
 
   const menuItems = [
@@ -65,9 +65,9 @@ const PublicHeader: React.FC = () => {
       children: carItems.length > 0 ? carItems : undefined
     },
     {
-      key: 'scooter-submenu',
+      key: 'greencar-submenu',
       label: 'Dòng xe VinFast Green',
-      children: scooterItems.length > 0 ? scooterItems : undefined
+      children: greencarItems.length > 0 ? greencarItems : undefined
     },
     { key: '/installment', label: 'Trả góp' },
     { key: '/accessories', label: 'Phụ kiện' },

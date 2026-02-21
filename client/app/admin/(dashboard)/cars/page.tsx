@@ -60,7 +60,7 @@ const CarManagement = () => {
       key: 'category',
       render: (cat: string) => (
         <Tag color={cat === 'car' ? 'blue' : 'green'}>
-          {cat === 'car' ? 'Ô tô' : 'Xe máy'}
+          {cat === 'car' ? 'Dòng xe cá nhân' : cat === 'greencar' ? 'Dòng xe Green' : cat}
         </Tag>
       ),
     },

@@ -276,7 +276,7 @@ const CarForm: React.FC<CarFormProps> = ({ initialValues, isEdit = false }) => {
           >
             <Select>
               <Option value="car">Dòng xe cá nhân</Option>
-              <Option value="scooter">Dòng xe VinFast Green</Option>
+              <Option value="greencar">Dòng xe Green</Option>
               <Option value="accessory">Phụ kiện</Option>
             </Select>
           </Form.Item>
