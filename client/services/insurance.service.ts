@@ -4,10 +4,12 @@ export interface Insurance {
   id: number;
   name: string;
   slug: string;
+  provider?: string;
   thumbnail: string;
   shortSummary?: string;
   description?: string;
   price?: string;
+  duration?: string;
   isActive: boolean;
   createdAt: string;
   updatedAt: string;

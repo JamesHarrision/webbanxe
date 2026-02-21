@@ -5,6 +5,7 @@ import { accessoryService, Accessory } from '@/services/accessory.service';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Spin } from 'antd';
+import { formatCurrency } from '@/lib/format';
 
 const AccessoriesPage = () => {
   const [accessories, setAccessories] = useState<Accessory[]>([]);
@@ -46,9 +47,9 @@ const AccessoriesPage = () => {
               <h2 className="text-lg font-bold text-gray-800 line-clamp-2 mb-2 group-hover:text-[#0f4c81] transition-colors">{item.name}</h2>
               <div className="mt-auto">
                 <div className="flex items-baseline gap-2">
-                  <span className="text-red-600 font-bold text-lg">{item.salePrice || item.price || 'Liên hệ'}</span>
+                  <span className="text-red-600 font-bold text-lg">{formatCurrency(item.salePrice || item.price)}</span>
                   {item.salePrice && item.price && (
-                    <span className="text-gray-400 line-through text-sm">{item.price}</span>
+                    <span className="text-gray-400 line-through text-sm">{formatCurrency(item.price)}</span>
                   )}
                 </div>
               </div>

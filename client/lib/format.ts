@@ -15,10 +15,17 @@ export const getNumericPrice = (value: number | string | null | undefined): numb
 
 /** Format a number/decimal-string as Vietnamese Đồng (₫) */
 export const formatCurrency = (value: number | string | null | undefined): string => {
-  if (value === null || value === undefined || value === '') return '';
+  if (value === null || value === undefined || value === '') return 'Liên hệ';
 
-  const num = typeof value === 'number' ? value : parseFloat(String(value).replace(/,/g, ''));
+  // Clean up string to get raw number
+  const cleanStr = String(value).replace(/[^\d]/g, '');
+  const num = parseInt(cleanStr, 10);
+
   if (isNaN(num)) return String(value);
 
-  return new Intl.NumberFormat('vi-VN').format(num) + ' Đ';
+  return new Intl.NumberFormat('vi-VN', {
+    style: 'currency',
+    currency: 'VND',
+    maximumFractionDigits: 0
+  }).format(num);
 };

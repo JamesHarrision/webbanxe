@@ -49,9 +49,9 @@ const PublicLayoutContent = ({ children }: { children: React.ReactNode }) => {
   }
 
   return (
-    <Layout className="min-h-screen flex flex-col">
+    <Layout className="min-h-screen flex flex-col bg-white">
       <PublicHeader />
-      <Content className="flex-grow bg-white">
+      <Content className="flex-grow bg-white w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {children}
       </Content>
       <FloatingContactButtons />

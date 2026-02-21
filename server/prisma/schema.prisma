@@ -55,10 +55,12 @@ model Insurance {
   id           Int      @id @default(autoincrement())
   name         String // VD: "Bảo hiểm thân vỏ PTI 1 năm"
   slug         String   @unique
+  provider     String? // VD: "PTI", "Bảo Việt", "PVI"
   thumbnail    String
   shortSummary String?
   description  String?  @db.Text
   price        String?
+  duration     String? // VD: "6 tháng", "1 năm", "2 năm"
   isActive     Boolean  @default(true)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt

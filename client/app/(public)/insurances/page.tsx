@@ -6,6 +6,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Spin } from 'antd';
 import { RightOutlined } from '@ant-design/icons';
+import { formatCurrency } from '@/lib/format';
 
 const InsurancesPage = () => {
   const [insurances, setInsurances] = useState<Insurance[]>([]);
@@ -53,7 +54,10 @@ const InsurancesPage = () => {
                 <h2 className="text-2xl font-bold text-gray-900 mb-3">{item.name}</h2>
                 <p className="text-gray-600 mb-6 line-clamp-3">{item.shortSummary}</p>
                 <div className="flex items-center justify-between mt-auto">
-                  <span className="text-[#0f4c81] font-bold text-lg">{item.price || 'Liên hệ'}</span>
+                  <div className="flex items-baseline gap-1">
+                    <span className="text-[#0f4c81] font-bold text-lg">{formatCurrency(item.price)}</span>
+                    {item.duration && <span className="text-gray-500 text-sm">/ {item.duration}</span>}
+                  </div>
                   <Link href={`/insurances/${item.slug}`} className="inline-flex items-center text-blue-600 font-semibold hover:text-blue-800 transition-colors">
                     Chi tiết <RightOutlined className="ml-2 text-sm" />
                   </Link>

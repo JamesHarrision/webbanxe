@@ -29,23 +29,45 @@ export default function Home() {
       <ProductList />
 
       {/* Features Section */}
-      <section className="py-16 bg-white">
-        <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
-            <div className="p-6 rounded-lg hover:shadow-lg transition-shadow border border-gray-100">
-              <ThunderboltOutlined className="text-5xl text-blue-600 mb-4" />
-              <h3 className="text-xl font-bold mb-2 text-[#0f4c81]">Công nghệ tiên tiến</h3>
-              <p className="text-gray-600">Trải nghiệm lái xe thông minh với các tính năng ADAS và Smart Services vượt trội.</p>
+      <section className="py-8 bg-white">
+        <div className="container mx-auto px-4 max-w-7xl">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold text-[#0f4c81] mb-4 uppercase tracking-tight">Tại sao nên chọn VinFast?</h2>
+            <p className="text-gray-600 max-w-2xl mx-auto text-lg leading-relaxed">
+              VinFast không chỉ là một chiếc xe, đó là một hệ sinh thái thông minh, an toàn và bền vững cho cuộc sống hiện đại.
+            </p>
+            <div className="w-24 h-1 bg-orange-500 mx-auto mt-6 rounded-full" />
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+            <div className="p-8 rounded-3xl hover:shadow-xl transition-all duration-300 border border-gray-100 bg-white text-center group">
+              <div className="w-20 h-20 bg-blue-50 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:bg-blue-600 transition-colors duration-300">
+                <ThunderboltOutlined className="text-4xl text-blue-600 group-hover:text-white transition-colors duration-300" />
+              </div>
+              <h3 className="text-xl font-bold mb-4 text-[#0f4c81]">Công nghệ tiên tiến</h3>
+              <p className="text-gray-600 leading-relaxed">
+                Hệ thống hỗ trợ lái nâng cao ADAS cùng các tính năng thông minh Smart Services giúp chuyến đi của bạn trở nên thú vị và an toàn hơn bao giờ hết.
+              </p>
             </div>
-            <div className="p-6 rounded-lg hover:shadow-lg transition-shadow border border-gray-100">
-              <SafetyCertificateOutlined className="text-5xl text-blue-600 mb-4" />
-              <h3 className="text-xl font-bold mb-2 text-[#0f4c81]">An toàn hàng đầu</h3>
-              <p className="text-gray-600">Đạt tiêu chuẩn an toàn cao nhất từ ASEAN NCAP, EURO NCAP và NHTSA.</p>
+
+            <div className="p-8 rounded-3xl hover:shadow-xl transition-all duration-300 border border-gray-100 bg-white text-center group">
+              <div className="w-20 h-20 bg-blue-50 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:bg-blue-600 transition-colors duration-300">
+                <SafetyCertificateOutlined className="text-4xl text-blue-600 group-hover:text-white transition-colors duration-300" />
+              </div>
+              <h3 className="text-xl font-bold mb-4 text-[#0f4c81]">An toàn hàng đầu</h3>
+              <p className="text-gray-600 leading-relaxed">
+                Các dòng xe VinFast được thiết kế theo tiêu chuẩn an toàn quốc tế, đạt chứng nhận từ ASEAN NCAP đến EURO NCAP, bảo vệ tối đa cho mọi hành khách.
+              </p>
             </div>
-            <div className="p-6 rounded-lg hover:shadow-lg transition-shadow border border-gray-100">
-              <DollarOutlined className="text-5xl text-blue-600 mb-4" />
-              <h3 className="text-xl font-bold mb-2 text-[#0f4c81]">Chính sách hậu mãi</h3>
-              <p className="text-gray-600">Bảo hành 10 năm, cứu hộ 24/7 và hệ thống trạm sạc phủ khắp toàn quốc.</p>
+
+            <div className="p-8 rounded-3xl hover:shadow-xl transition-all duration-300 border border-gray-100 bg-white text-center group">
+              <div className="w-20 h-20 bg-blue-50 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:bg-blue-600 transition-colors duration-300">
+                <DollarOutlined className="text-4xl text-blue-600 group-hover:text-white transition-colors duration-300" />
+              </div>
+              <h3 className="text-xl font-bold mb-4 text-[#0f4c81]">Chính sách hậu mãi</h3>
+              <p className="text-gray-600 leading-relaxed">
+                Chế độ bảo hành lên đến 10 năm, hệ thống cứu hộ 24/7 và mạng lưới trạm sạc rộng khắp cả nước mang lại sự an tâm tuyệt đối trên mọi hành trình.
+              </p>
             </div>
           </div>
         </div>

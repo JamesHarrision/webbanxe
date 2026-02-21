@@ -109,16 +109,16 @@ const AccessoryForm: React.FC<AccessoryFormProps> = ({ initialValues, isEdit = f
 
           <Form.Item
             name="price"
-            label="Giá niêm yết (Hiển thị văn bản)"
+            label="Giá niêm yết (Chỉ nhập số để tự động định dạng)"
           >
-            <Input placeholder="VD: 1.200.000đ" />
+            <Input placeholder="VD: 1200000" />
           </Form.Item>
 
           <Form.Item
             name="salePrice"
-            label="Giá khuyến mãi"
+            label="Giá khuyến mãi (Dành cho badge khuyến mãi)"
           >
-            <Input placeholder="VD: 990.000đ" />
+            <Input placeholder="VD: 990000" />
           </Form.Item>
 
           <Form.Item

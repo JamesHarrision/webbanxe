@@ -60,19 +60,18 @@ const PublicHeader: React.FC = () => {
   const menuItems = [
     { key: '/', label: 'Trang chủ' },
     {
-      key: 'cars-submenu',
+      key: '/categories/car',
       label: 'Dòng xe cá nhân',
       children: carItems.length > 0 ? carItems : undefined
     },
     {
-      key: 'greencar-submenu',
+      key: '/categories/greencar',
       label: 'Dòng xe VinFast Green',
       children: greencarItems.length > 0 ? greencarItems : undefined
     },
     { key: '/installment', label: 'Trả góp' },
     { key: '/accessories', label: 'Phụ kiện' },
     { key: '/insurances', label: 'Bảo hiểm' },
-    { key: '/cost-estimate', label: 'Dự toán chi phí' },
     { key: '/news', label: 'Tin tức' },
     { key: '/contact', label: 'Liên hệ' },
   ];
@@ -151,13 +150,16 @@ const PublicHeader: React.FC = () => {
             {menuItems.map((item) => (
               <li key={item.key} className="relative group">
                 {item.children && item.children.length > 0 ? (
-                  <span className="px-4 py-3 cursor-pointer text-gray-700 font-medium hover:text-[#1890ff] flex items-center gap-1 transition-colors">
+                  <Link
+                    href={item.key}
+                    className={`px-4 py-3 cursor-pointer font-medium hover:text-[#1890ff] flex items-center gap-1 transition-colors ${pathname.startsWith(item.key) ? 'text-[#1890ff]' : 'text-gray-700'}`}
+                  >
                     {item.label} <DownOutlined className="text-xs" />
-                  </span>
+                  </Link>
                 ) : (
                   <Link
                     href={item.key}
-                    className={`px-4 py-3 block text-gray-700 font-medium hover:text-[#1890ff] transition-colors cursor-pointer ${pathname === item.key ? 'text-[#1890ff]' : ''}`}
+                    className={`px-4 py-3 block font-medium hover:text-[#1890ff] transition-colors cursor-pointer ${pathname === item.key ? 'text-[#1890ff]' : 'text-gray-700'}`}
                   >
                     {item.label}
                   </Link>
@@ -165,12 +167,12 @@ const PublicHeader: React.FC = () => {
 
                 {/* Dropdown */}
                 {item.children && item.children.length > 0 && (
-                  <div className="absolute top-full left-0 bg-white shadow-lg rounded-b-md py-2 w-56 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 transform translate-y-2 group-hover:translate-y-0 border-t-2 border-[#1890ff]">
+                  <div className="absolute top-full left-0 bg-white shadow-lg rounded-b-md py-1.5 w-56 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 transform translate-y-2 group-hover:translate-y-0 border-t-2 border-[#1890ff]">
                     {item.children.map((child) => (
                       <Link
                         key={child.key}
                         href={child.key}
-                        className="block px-4 py-2 text-gray-600 hover:bg-gray-50 hover:text-[#1890ff]"
+                        className="block px-4 py-1.5 text-gray-600 hover:bg-gray-50 hover:text-[#1890ff] text-sm"
                       >
                         {child.label}
                       </Link>
@@ -183,12 +185,13 @@ const PublicHeader: React.FC = () => {
         </nav>
 
         {/* Mobile Menu Button */}
-        <Button
-          type="text"
-          className="lg:hidden"
-          icon={<MenuOutlined className="text-2xl" />}
-          onClick={() => setMobileMenuOpen(true)}
-        />
+        <div className="lg:hidden flex">
+          <Button
+            type="text"
+            icon={<MenuOutlined className="text-2xl" style={{ color: 'white' }} />}
+            onClick={() => setMobileMenuOpen(true)}
+          />
+        </div>
       </Header>
 
       {/* Mobile Drawer */}
