@@ -155,7 +155,7 @@ const PublicHeader: React.FC = () => {
                 ) : (
                   <Link
                     href={item.key}
-                    className={`px-4 py-3 block text-gray-700 font-medium hover:text-[#1890ff] transition-colors ${pathname === item.key ? 'text-[#1890ff]' : ''}`}
+                    className={`px-4 py-3 block text-gray-700 font-medium hover:text-[#1890ff] transition-colors cursor-pointer ${pathname === item.key ? 'text-[#1890ff]' : ''}`}
                   >
                     {item.label}
                   </Link>

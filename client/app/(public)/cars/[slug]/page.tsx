@@ -64,7 +64,7 @@ const DetailError = () => (
       </p>
       <Link
         href="/"
-        className="inline-flex items-center gap-2 bg-[#0f4c81] hover:bg-[#1a6ab5] text-white font-semibold px-6 py-3 rounded-xl transition-colors"
+        className="inline-flex items-center gap-2 bg-[#0f4c81] hover:bg-[#1a6ab5] text-white font-semibold px-6 py-3 rounded-xl transition-colors cursor-pointer"
       >
         <LeftOutlined />
         Quay lại trang chủ
@@ -151,7 +151,7 @@ export default function CarDetailPage() {
       <div className="bg-gray-50 border-b border-gray-100">
         <div className="container mx-auto px-4 py-3">
           <nav className="flex items-center text-sm text-gray-500 gap-2 flex-wrap">
-            <Link href="/" className="hover:text-[#0f4c81] transition-colors">
+            <Link href="/" className="hover:text-[#0f4c81] transition-colors cursor-pointer">
               Trang chủ
             </Link>
             <span>/</span>
@@ -193,7 +193,7 @@ export default function CarDetailPage() {
                   </div>
                 )}
 
-                <button className="absolute bottom-4 right-4 z-10 bg-white/80 backdrop-blur-sm p-2 rounded-full text-gray-600 hover:text-[#0f4c81] transition-colors md:hidden">
+                <button className="absolute bottom-4 right-4 z-10 bg-white/80 backdrop-blur-sm p-2 rounded-full text-gray-600 hover:text-[#0f4c81] transition-colors md:hidden cursor-pointer">
                   <FullscreenOutlined />
                 </button>
               </Swiper>
@@ -233,9 +233,6 @@ export default function CarDetailPage() {
           {/* Car Info Column */}
           <div className="flex flex-col">
             <div className="mb-6">
-              <span className="inline-block bg-blue-50 text-blue-600 text-[11px] font-bold px-3 py-1 rounded-full mb-3 uppercase tracking-widest">
-                {car.category || 'VinFast EV'}
-              </span>
               <h1 className="text-3xl lg:text-5xl font-extrabold text-gray-900 leading-tight">
                 {car.name}
               </h1>
@@ -307,14 +304,14 @@ export default function CarDetailPage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-auto">
               <button
                 onClick={() => openModal({ type: 'QUOTE', carModel: car.name })}
-                className="group relative flex items-center justify-center gap-3 bg-orange-500 hover:bg-orange-600 text-white font-black py-5 px-8 rounded-2xl transition-all hover:scale-[1.02] active:scale-95 shadow-lg shadow-orange-500/20 uppercase tracking-widest text-sm"
+                className="group relative flex items-center justify-center gap-3 bg-orange-500 hover:bg-orange-600 text-white font-black py-5 px-8 rounded-2xl transition-all hover:scale-[1.02] active:scale-95 shadow-lg shadow-orange-500/20 uppercase tracking-widest text-sm cursor-pointer"
               >
                 <PhoneOutlined className="text-xl animate-pulse" />
                 Nhận báo giá ngay
               </button>
               <button
                 onClick={() => openModal({ type: 'TEST_DRIVE', carModel: car.name })}
-                className="flex items-center justify-center gap-3 border-2 border-[#0f4c81] text-[#0f4c81] hover:bg-[#0f4c81] hover:text-white font-black py-5 px-8 rounded-2xl transition-all hover:scale-[1.02] active:scale-95 uppercase tracking-widest text-sm"
+                className="flex items-center justify-center gap-3 border-2 border-[#0f4c81] text-[#0f4c81] hover:bg-[#0f4c81] hover:text-white font-black py-5 px-8 rounded-2xl transition-all hover:scale-[1.02] active:scale-95 uppercase tracking-widest text-sm cursor-pointer"
               >
                 <CarOutlined className="text-xl" />
                 Đăng ký lái thử

@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { PhoneOutlined } from '@ant-design/icons';
+import { PhoneFilled } from '@ant-design/icons';
 import { useQuery } from '@tanstack/react-query';
 import { settingService, PublicSettings } from '@/services/setting.service';
 
@@ -22,9 +22,9 @@ const FloatingContactButtons = () => {
         <div className="absolute inset-0 bg-green-500 rounded-full animate-ping-custom opacity-75"></div>
         <a
           href={`tel:${cleanHotline}`}
-          className="relative flex items-center justify-center w-12 h-12 bg-green-600 rounded-full text-white shadow-lg hover:bg-green-700 transition-colors"
+          className="relative flex items-center justify-center w-12 h-12 bg-green-600 rounded-full text-white shadow-lg hover:bg-green-700 transition-colors cursor-pointer"
         >
-          <PhoneOutlined className="text-xl rotate-90" />
+          <PhoneFilled className="text-xl" />
         </a>
         <span className="ml-3 bg-white px-3 py-1 rounded-full shadow-md text-sm font-semibold text-green-700 opacity-0 group-hover:opacity-100 transition-opacity absolute left-12 whitespace-nowrap">
           {hotline}
@@ -38,7 +38,7 @@ const FloatingContactButtons = () => {
           href={zaloUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="relative flex items-center justify-center w-12 h-12 bg-blue-600 rounded-full text-white shadow-lg hover:bg-blue-700 transition-colors overflow-hidden"
+          className="relative flex items-center justify-center w-12 h-12 bg-blue-600 rounded-full text-white shadow-lg hover:bg-blue-700 transition-colors overflow-hidden cursor-pointer"
         >
           <span className="font-bold text-xl italic">Z</span>
         </a>
