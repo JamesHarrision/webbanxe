@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Layout, Form, Input, Button, App, Space } from 'antd';
+import { Layout, Form, Input, Button, App, Space, ConfigProvider, theme } from 'antd';
 import Link from 'next/link';
 import NextImage from 'next/image';
 import {
@@ -17,6 +17,7 @@ import { useQuery } from '@tanstack/react-query';
 import { settingService, PublicSettings } from '@/services/setting.service';
 import { carService } from '@/services/car.service';
 import { leadService } from '@/services/lead.service';
+import LeadForm from '@/components/forms/LeadForm';
 import logo from '@/app/logo.png';
 
 const { Footer } = Layout;
@@ -29,40 +30,18 @@ const TikTokIcon = () => (
 );
 
 const PublicFooter: React.FC = () => {
-  const [form] = Form.useForm();
-  const { message } = App.useApp();
-  const [submitting, setSubmitting] = React.useState(false);
-
-  // Fetch settings
+  // Restore data fetching logic for settings and cars
   const { data: settings } = useQuery<PublicSettings>({
     queryKey: ['publicSettings'],
     queryFn: () => settingService.getPublicSettings(),
   });
 
-  // Fetch cars for product list
   const { data: cars = [] } = useQuery({
     queryKey: ['publicCars'],
     queryFn: () => carService.getAll({ view: 'public' }),
   });
 
   const branches: string[] = settings?.BRANCHES ? JSON.parse(settings.BRANCHES) : [];
-
-  const handleFinish = async (values: { fullName: string; phone: string }) => {
-    setSubmitting(true);
-    try {
-      await leadService.submit({
-        ...values,
-        serviceType: 'BAO_GIA',
-        notes: 'Đăng ký nhận báo giá từ footer',
-      });
-      message.success('Đăng ký nhận báo giá thành công! Chúng tôi sẽ liên hệ lại sớm nhất.');
-      form.resetFields();
-    } catch {
-      message.error('Có lỗi xảy ra, vui lòng thử lại sau.');
-    } finally {
-      setSubmitting(false);
-    }
-  };
 
   return (
     <Footer
@@ -177,41 +156,13 @@ const PublicFooter: React.FC = () => {
               <span className="absolute bottom-[-8px] left-0 w-12 h-0.5 bg-[#1890ff]"></span>
             </h3>
 
-            <Form form={form} onFinish={handleFinish} className="mb-8">
-              <Form.Item
-                name="fullName"
-                rules={[{ required: true, message: 'Vui lòng nhập họ và tên' }]}
-              >
-                <Input
-                  placeholder="Họ và tên"
-                  style={{ backgroundColor: '#2a2a2a', border: 'none', color: '#fff', height: '44px' }}
-                  className="placeholder:text-gray-500"
-                />
-              </Form.Item>
-              <Form.Item
-                name="phone"
-                rules={[
-                  { required: true, message: 'Vui lòng nhập số điện thoại' },
-                  { pattern: /^[0-9+]{10,12}$/, message: 'Số điện thoại không hợp lệ' }
-                ]}
-              >
-                <Input
-                  placeholder="Số điện thoại"
-                  style={{ backgroundColor: '#2a2a2a', border: 'none', color: '#fff', height: '44px' }}
-                  className="placeholder:text-gray-500"
-                />
-              </Form.Item>
-              <Form.Item className="mb-0">
-                <Button
-                  type="primary"
-                  htmlType="submit"
-                  loading={submitting}
-                  className="w-full h-14 bg-[#0c4da2] hover:bg-[#0e5cbf] border-none text-lg font-bold rounded-full uppercase tracking-widest transition-all duration-300 hover:scale-[1.02] shadow-[0_0_20px_rgba(12,77,162,0.3)] flex items-center justify-center"
-                >
-                  ĐĂNG KÝ
-                </Button>
-              </Form.Item>
-            </Form>
+            <div className="footer-lead-form shadow-2xl">
+              <LeadForm
+                formName="footer_lead_form"
+                initialValues={{ serviceType: 'BAO_GIA' }}
+                variant="dark"
+              />
+            </div>
 
             <h3 className="text-white font-semibold text-base mb-4">Liên kết mạng xã hội</h3>
             <div className="flex gap-4">
