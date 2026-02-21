@@ -15,8 +15,14 @@ export const getAccessories = async (req: Request, res: Response): Promise<void>
 // [PUBLIC] Lấy chi tiết phụ kiện
 export const getAccessory = async (req: Request, res: Response): Promise<void> => {
   try {
-    const id = Number(req.params.id);
-    const accessory = await accessoryService.getAccessoryById(id);
+    const { identifier } = req.params;
+    let accessory;
+
+    if (!isNaN(Number(identifier))) {
+      accessory = await accessoryService.getAccessoryById(Number(identifier));
+    } else {
+      accessory = await accessoryService.getAccessoryBySlug(identifier as string);
+    }
 
     if (!accessory) {
       res.status(404).json({ success: false, message: 'Không tìm thấy phụ kiện!' });

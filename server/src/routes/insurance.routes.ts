@@ -1,14 +1,14 @@
 import { Router } from 'express';
 import { getInsurances, getInsurance, createInsurance, updateInsurance, deleteInsurance } from '../controllers/insurance.controller';
-import { verifyToken } from '../middlewares/auth.middleware';
+import { verifyToken, optionalVerifyToken } from '../middlewares/auth.middleware';
 
 const router = Router();
 
 // =====================================
 // PUBLIC ROUTES
 // =====================================
-router.get('/', getInsurances);
-router.get('/:id', getInsurance);
+router.get('/', optionalVerifyToken, getInsurances);
+router.get('/:identifier', getInsurance);
 
 // =====================================
 // PROTECTED ROUTES (ADMIN)

@@ -1,14 +1,14 @@
 import { Router } from 'express';
 import { getAccessories, getAccessory, createAccessory, updateAccessory, deleteAccessory } from '../controllers/accessory.controller';
-import { verifyToken } from '../middlewares/auth.middleware';
+import { verifyToken, optionalVerifyToken } from '../middlewares/auth.middleware';
 
 const router = Router();
 
 // =====================================
 // PUBLIC ROUTES
 // =====================================
-router.get('/', getAccessories);
-router.get('/:id', getAccessory);
+router.get('/', optionalVerifyToken, getAccessories);
+router.get('/:identifier', getAccessory);
 
 // =====================================
 // PROTECTED ROUTES (ADMIN)

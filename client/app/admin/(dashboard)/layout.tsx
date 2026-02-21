@@ -11,6 +11,8 @@ import {
   SettingOutlined,
   PictureOutlined,
   StarOutlined,
+  ShoppingOutlined,
+  SafetyCertificateOutlined,
 } from '@ant-design/icons';
 import { useRouter, usePathname } from 'next/navigation';
 import { useAuthStore } from '@/store/authStore';
@@ -75,6 +77,16 @@ export default function AdminDashboardLayout({
               key: '/admin/posts',
               icon: <FileTextOutlined />,
               label: <Link href="/admin/posts">Tin tức / Bài viết</Link>,
+            },
+            {
+              key: '/admin/accessories',
+              icon: <ShoppingOutlined />,
+              label: <Link href="/admin/accessories">Phụ kiện (Shopee)</Link>,
+            },
+            {
+              key: '/admin/insurances',
+              icon: <SafetyCertificateOutlined />,
+              label: <Link href="/admin/insurances">Bảo hiểm</Link>,
             },
             {
               key: '/admin/hero-slides',

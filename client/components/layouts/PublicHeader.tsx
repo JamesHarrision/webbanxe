@@ -70,6 +70,8 @@ const PublicHeader: React.FC = () => {
       children: scooterItems.length > 0 ? scooterItems : undefined
     },
     { key: '/installment', label: 'Trả góp' },
+    { key: '/accessories', label: 'Phụ kiện' },
+    { key: '/insurances', label: 'Bảo hiểm' },
     { key: '/cost-estimate', label: 'Dự toán chi phí' },
     { key: '/news', label: 'Tin tức' },
     { key: '/contact', label: 'Liên hệ' },

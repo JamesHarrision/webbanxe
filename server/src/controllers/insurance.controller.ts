@@ -15,8 +15,14 @@ export const getInsurances = async (req: Request, res: Response): Promise<void> 
 // [PUBLIC] Lấy chi tiết gói bảo hiểm
 export const getInsurance = async (req: Request, res: Response): Promise<void> => {
   try {
-    const id = Number(req.params.id);
-    const insurance = await insuranceService.getInsuranceById(id);
+    const { identifier } = req.params;
+    let insurance;
+
+    if (!isNaN(Number(identifier))) {
+      insurance = await insuranceService.getInsuranceById(Number(identifier));
+    } else {
+      insurance = await insuranceService.getInsuranceBySlug(identifier as string);
+    }
 
     if (!insurance) {
       res.status(404).json({ success: false, message: 'Không tìm thấy gói bảo hiểm!' });

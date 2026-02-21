@@ -52,29 +52,33 @@ model CarColor {
 // DỊCH VỤ: BẢO HIỂM
 // ------------------------------------------------------
 model Insurance {
-  id          Int     @id @default(autoincrement())
-  name        String // VD: "Bảo hiểm thân vỏ PTI 1 năm"
-  provider    String // VD: "PTI", "Bảo Việt"
-  price       Decimal @db.Decimal(15, 2)
-  description String? @db.Text
-  isActive    Boolean @default(true)
-
-  createdAt DateTime @default(now())
+  id           Int      @id @default(autoincrement())
+  name         String // VD: "Bảo hiểm thân vỏ PTI 1 năm"
+  slug         String   @unique
+  thumbnail    String
+  shortSummary String?
+  description  String?  @db.Text
+  price        String?
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 }
 
 // ------------------------------------------------------
 // PHỤ KIỆN (AFFILIATE SHOPEE)
 // ------------------------------------------------------
 model Accessory {
-  id        Int     @id @default(autoincrement())
-  name      String
-  price     Decimal @db.Decimal(15, 2)
-  thumbnail String
-  shopeeUrl String  @db.Text
-  category  String
-  isActive  Boolean @default(true)
-
-  createdAt DateTime @default(now())
+  id           Int      @id @default(autoincrement())
+  name         String
+  slug         String   @unique
+  thumbnail    String
+  price        String?
+  salePrice    String?
+  affiliateUrl String   @db.Text
+  description  String?  @db.LongText
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 }
 
 // ------------------------------------------------------
