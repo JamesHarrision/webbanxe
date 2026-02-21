@@ -79,40 +79,6 @@ const HeroSlider = () => {
         ))}
       </Swiper>
 
-      <style jsx global>{`
-        .hero-slider .swiper-button-next,
-        .hero-slider .swiper-button-prev {
-          color: white;
-          opacity: 0;
-          transition: opacity 0.3s ease;
-        }
-        .hero-slider:hover .swiper-button-next,
-        .hero-slider:hover .swiper-button-prev {
-          opacity: 0.6;
-        }
-        .hero-slider .swiper-button-next:hover,
-        .hero-slider .swiper-button-prev:hover {
-          opacity: 1;
-        }
-        .hero-slider .swiper-pagination-bullet {
-          background: white;
-          opacity: 0.5;
-        }
-        .hero-slider .swiper-pagination-bullet-active {
-          background: #f97316;
-          opacity: 1;
-          width: 24px;
-          border-radius: 4px;
-          transition: width 0.3s ease;
-        }
-        @keyframes fade-in-up {
-          from { opacity: 0; transform: translateY(20px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-        .animate-fade-in-up {
-          animation: fade-in-up 0.8s ease-out forwards;
-        }
-      `}</style>
     </div>
   );
 };

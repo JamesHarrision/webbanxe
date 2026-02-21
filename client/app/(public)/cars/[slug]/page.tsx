@@ -243,7 +243,7 @@ export default function CarDetailPage() {
 
             <div className="bg-gradient-to-br from-[#0f4c81] to-[#1a6ab5] rounded-3xl p-6 lg:p-8 text-white shadow-xl shadow-blue-900/10 mb-8 relative overflow-hidden group">
               <div className="absolute -top-10 -right-10 w-40 h-40 bg-white/10 rounded-full blur-3xl group-hover:bg-white/20 transition-all duration-700" />
-              <p className="text-blue-100/70 text-sm font-medium mb-2 uppercase tracking-wide">Giá niêm yết (Đã bao gồm VAT)</p>
+              <p className="text-blue-100/70 text-sm font-medium mb-2 uppercase tracking-wide">Giá niêm yết</p>
 
               {hasDiscount ? (
                 <div>

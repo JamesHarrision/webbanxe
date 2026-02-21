@@ -13,6 +13,88 @@
   --font-mono: var(--font-geist-mono);
   --color-vinfast-blue: #1890ff;
   --color-vinfast-red: #cf1322;
+
+  /* --- Animations --- */
+  --animate-ping-custom: ping-custom 1.5s cubic-bezier(0, 0, 0.2, 1) infinite;
+  --animate-drive: drive 2s linear infinite;
+  --animate-slide-road: slide-road 1s linear infinite;
+  --animate-wind: wind 0.8s linear infinite;
+  --animate-bounce-custom: bounce-custom 0.5s ease-in-out infinite;
+  --animate-fade-in-up: fade-in-up 0.8s ease-out forwards;
+
+  @keyframes fade-in-up {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes ping-custom {
+
+    75%,
+    100% {
+      transform: scale(2);
+      opacity: 0;
+    }
+  }
+
+  @keyframes drive {
+    0% {
+      transform: translateX(-100px);
+    }
+
+    50% {
+      transform: translateX(0);
+    }
+
+    100% {
+      transform: translateX(100px);
+      opacity: 0;
+    }
+  }
+
+  @keyframes slide-road {
+    0% {
+      transform: translateX(0);
+    }
+
+    100% {
+      transform: translateX(-100%);
+    }
+  }
+
+  @keyframes wind {
+    0% {
+      transform: translateX(100%);
+      opacity: 0;
+    }
+
+    50% {
+      opacity: 1;
+    }
+
+    100% {
+      transform: translateX(-200%);
+      opacity: 0;
+    }
+  }
+
+  @keyframes bounce-custom {
+
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+
+    50% {
+      transform: translateY(-2px);
+    }
+  }
 }
 
 /* @media (prefers-color-scheme: dark) {
@@ -28,73 +110,95 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
-/* --- Shared Animations --- */
-@keyframes ping-custom {
-  75%, 100% {
-    transform: scale(2);
-    opacity: 0;
-  }
+/* --- Component Specific Styles (Non-animation) --- */
+
+/* HeroSlider overrides */
+.hero-slider .swiper-button-next,
+.hero-slider .swiper-button-prev {
+  color: white;
+  opacity: 0;
+  transition: opacity 0.3s ease;
 }
 
-@keyframes drive {
-  0% { transform: translateX(-100px); }
-  50% { transform: translateX(0); }
-  100% { transform: translateX(100px); opacity: 0; }
+.hero-slider:hover .swiper-button-next,
+.hero-slider:hover .swiper-button-prev {
+  opacity: 0.6;
 }
 
-@keyframes slide-road {
-  0% { transform: translateX(0); }
-  100% { transform: translateX(-100%); }
+.hero-slider .swiper-button-next:hover,
+.hero-slider .swiper-button-prev:hover {
+  opacity: 1;
 }
 
-@keyframes wind {
-  0% { transform: translateX(100%); opacity: 0; }
-  50% { opacity: 1; }
-  100% { transform: translateX(-200%); opacity: 0; }
+.hero-slider .swiper-pagination-bullet {
+  background: white;
+  opacity: 0.5;
 }
 
-@keyframes bounce-custom {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-2px); }
+.hero-slider .swiper-pagination-bullet-active {
+  background: #f97316;
+  opacity: 1;
+  width: 24px;
+  border-radius: 4px;
+  transition: width 0.3s ease;
 }
 
-/* --- Component Specific Styles --- */
-
-/* FloatingContactButtons */
-.animate-ping-custom {
-  animation: ping-custom 1.5s cubic-bezier(0, 0, 0.2, 1) infinite;
+/* ProductList overrides */
+.product-swiper .swiper-button-next,
+.product-swiper .swiper-button-prev {
+  color: #0f4c81 !important;
+  background: white !important;
+  width: 40px !important;
+  height: 40px !important;
+  border-radius: 50% !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15) !important;
 }
 
-/* CarLoading */
-.animate-drive {
-  animation: drive 2s linear infinite;
+.product-swiper .swiper-button-next::after,
+.product-swiper .swiper-button-prev::after {
+  font-size: 16px !important;
+  font-weight: bold !important;
 }
-.animate-slide-road {
-  animation: slide-road 1s linear infinite;
+
+.product-swiper .swiper-pagination-bullet-active {
+  background: #f97316 !important;
 }
-.animate-wind {
-  animation: wind 0.8s linear infinite;
+
+/* Testimonials overrides */
+.testimonial-swiper .swiper-pagination-bullet {
+  width: 8px;
+  height: 8px;
+  background: #d1d5db;
+  opacity: 1;
 }
-.animate-bounce-custom {
-  animation: bounce-custom 0.5s ease-in-out infinite;
+
+.testimonial-swiper .swiper-pagination-bullet-active {
+  background: #f97316;
+  width: 24px;
+  border-radius: 4px;
+  transition: width 0.3s ease;
 }
 
 /* Swiper overrides (Car Detail Page) */
-.swiper-button-next, .swiper-button-prev {
+.swiper-button-next,
+.swiper-button-prev {
   background-color: white !important;
   width: 44px !important;
   height: 44px !important;
   border-radius: 50% !important;
   color: #0f4c81 !important;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
   z-index: 20 !important;
 }
-.swiper-button-next:after, .swiper-button-prev:after {
+
+.swiper-button-next:after,
+.swiper-button-prev:after {
   font-size: 18px !important;
   font-weight: bold !important;
 }
+
 .swiper-pagination-fraction {
-  background: rgba(0,0,0,0.5) !important;
+  background: rgba(0, 0, 0, 0.5) !important;
   color: white !important;
   width: auto !important;
   left: 50% !important;
@@ -104,6 +208,7 @@ body {
   font-size: 12px !important;
   font-weight: 700 !important;
 }
+
 .swiper-slide-thumb-active .border-transparent {
   border-color: #0f4c81 !important;
   padding: 2px !important;

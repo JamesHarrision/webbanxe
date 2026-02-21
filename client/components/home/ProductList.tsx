@@ -189,25 +189,6 @@ const ProductList = () => {
         {renderSection('Dòng xe VinFast Green', greenCars)}
       </div>
 
-      <style jsx global>{`
-        .product-swiper .swiper-button-next,
-        .product-swiper .swiper-button-prev {
-          color: #0f4c81;
-          background: white;
-          width: 40px;
-          height: 40px;
-          border-radius: 50%;
-          box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-        }
-        .product-swiper .swiper-button-next::after,
-        .product-swiper .swiper-button-prev::after {
-          font-size: 16px;
-          font-weight: bold;
-        }
-        .product-swiper .swiper-pagination-bullet-active {
-          background: #f97316;
-        }
-      `}</style>
     </section>
   );
 };

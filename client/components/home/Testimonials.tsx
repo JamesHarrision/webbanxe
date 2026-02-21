@@ -123,20 +123,6 @@ const Testimonials = () => {
         </Swiper>
       </div>
 
-      <style jsx global>{`
-        .testimonial-swiper .swiper-pagination-bullet {
-          width: 8px;
-          height: 8px;
-          background: #d1d5db;
-          opacity: 1;
-        }
-        .testimonial-swiper .swiper-pagination-bullet-active {
-          background: #f97316;
-          width: 24px;
-          border-radius: 4px;
-          transition: width 0.3s ease;
-        }
-      `}</style>
     </section>
   );
 };
