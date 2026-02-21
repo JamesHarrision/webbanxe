@@ -1,6 +1,15 @@
 import { Request, Response, RequestHandler } from 'express';
 import * as adminService from '../services/admin.service';
 
+export const getStats: RequestHandler = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const stats = await adminService.getDashboardStats();
+    res.status(200).json({ success: true, data: stats });
+  } catch (error: any) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
 export const login: RequestHandler = async (req: Request, res: Response): Promise<void> => {
   try {
     const { username, password } = req.body;

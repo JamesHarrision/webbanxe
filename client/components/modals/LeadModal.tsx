@@ -19,8 +19,8 @@ const LeadModal: React.FC = () => {
   };
 
   const initialValues: Partial<LeadFormData> = {
-    type: modalData?.type || 'QUOTE',
-    carModel: modalData?.carModel,
+    serviceType: modalData?.serviceType || 'BAO_GIA',
+    carInterest: modalData?.carInterest,
   };
 
   return (

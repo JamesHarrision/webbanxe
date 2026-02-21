@@ -2,6 +2,18 @@ import { prisma } from '../config/prisma';
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken';
 
+// [ADMIN] Dashboard thống kê
+export const getDashboardStats = async () => {
+  const [totalCars, totalPosts, totalLeads, newLeads] = await Promise.all([
+    prisma.car.count(),
+    prisma.post.count(),
+    prisma.lead.count(),
+    prisma.lead.count({ where: { status: 'NEW' } }),
+  ]);
+
+  return { totalCars, totalPosts, totalLeads, newLeads };
+};
+
 export const loginAdmin = async (username: string, password: string) => {
   // 1. Tìm admin trong DB
   const admin = await prisma.admin.findUnique({
