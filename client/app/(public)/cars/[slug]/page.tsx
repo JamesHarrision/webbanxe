@@ -10,7 +10,6 @@ import {
   LeftOutlined,
   PhoneOutlined,
   CarOutlined,
-  CheckCircleOutlined,
   InfoCircleOutlined,
   FullscreenOutlined,
 } from '@ant-design/icons';
@@ -18,19 +17,23 @@ import { carService, Car } from '@/services/car.service';
 import { useModal } from '@/context/ModalContext';
 import { formatCurrency, getNumericPrice } from '@/lib/format';
 
-// Swiper
+// Swiper imports
 import { Swiper, SwiperSlide } from 'swiper/react';
 import type { Swiper as SwiperType } from 'swiper';
 import { Navigation, Pagination, Thumbs, FreeMode } from 'swiper/modules';
 
-// Swiper styles
+// Swiper CSS
 import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 import 'swiper/css/thumbs';
 import 'swiper/css/free-mode';
 
-// ─── Loading Skeleton ────────────────────────────────────
+// Move static Swiper modules outside component to prevent instability
+const swiperModules = [FreeMode, Navigation, Thumbs, Pagination];
+const thumbModules = [FreeMode, Navigation, Thumbs];
+
+// --- Skeleton Component ---
 const DetailSkeleton = () => (
   <div className="container mx-auto px-4 py-8">
     <Skeleton.Button active size="small" style={{ width: 200, marginBottom: 24 }} />
@@ -50,7 +53,7 @@ const DetailSkeleton = () => (
   </div>
 );
 
-// ─── Error State ─────────────────────────────────────────
+// --- Error Component ---
 const DetailError = () => (
   <div className="container mx-auto px-4 py-20 text-center">
     <div className="max-w-md mx-auto">
@@ -70,7 +73,6 @@ const DetailError = () => (
   </div>
 );
 
-// ─── Main Page Component ────────────────────────────────
 export default function CarDetailPage() {
   const params = useParams();
   const slug = params.slug as string;
@@ -89,37 +91,33 @@ export default function CarDetailPage() {
     enabled: !!slug,
   });
 
-  // ── Color selection state ──
   const [selectedColorId, setSelectedColorId] = useState<number | null>(null);
 
-  // Combine thumbnail + gallery images + color images for a master gallery
+  // Memoize the master gallery: thumbnail + gallery + colors
   const allImages = useMemo(() => {
     if (!car) return [];
     const images: { url: string; type: 'thumbnail' | 'gallery' | 'color'; colorId?: number }[] = [
       { url: car.thumbnail, type: 'thumbnail' }
     ];
 
-    // Add gallery images
-    if (car.images && car.images.length > 0) {
+    if (Array.isArray(car.images)) {
       car.images.forEach(img => images.push({ url: img, type: 'gallery' }));
     }
 
-    // Add color images
-    if (car.colors && car.colors.length > 0) {
+    if (Array.isArray(car.colors)) {
       car.colors.forEach(col => images.push({ url: col.imageUrl, type: 'color', colorId: col.id }));
     }
 
     return images;
   }, [car]);
 
-  // Handle color click
+  // Handle color selection
   const handleColorClick = (colorId: number) => {
     if (selectedColorId === colorId) {
       setSelectedColorId(null);
       if (mainSwiper) mainSwiper.slideTo(0);
     } else {
       setSelectedColorId(colorId);
-      // Find the index of this color image in allImages
       const colorIndex = allImages.findIndex(img => img.colorId === colorId);
       if (colorIndex !== -1 && mainSwiper) {
         mainSwiper.slideTo(colorIndex);
@@ -128,22 +126,28 @@ export default function CarDetailPage() {
   };
 
   const selectedColorName = useMemo(() => {
-    if (!car?.colors || !selectedColorId) return null;
+    if (!Array.isArray(car?.colors) || !selectedColorId) return null;
     return car.colors.find((c) => c.id === selectedColorId)?.colorName ?? null;
   }, [car, selectedColorId]);
 
-  // ── Price helpers ──
   const priceNum = car ? getNumericPrice(car.price) : 0;
   const salePriceNum = car?.salePrice ? getNumericPrice(car.salePrice) : 0;
   const hasDiscount = salePriceNum > 0 && salePriceNum < priceNum;
 
-  // ── Render ──
+  // Memoize Swiper settings for stability
+  const swiperPagination = useMemo(() => ({ type: 'fraction' as const }), []);
+  const swiperBreakpoints = useMemo(() => ({
+    640: { slidesPerView: 5 },
+    1024: { slidesPerView: 4 },
+    1280: { slidesPerView: 5 },
+  }), []);
+
   if (isLoading) return <DetailSkeleton />;
   if (isError || !car) return <DetailError />;
 
   return (
     <div className="min-h-screen bg-white">
-      {/* ─── Breadcrumb ─── */}
+      {/* Breadcrumb Section */}
       <div className="bg-gray-50 border-b border-gray-100">
         <div className="container mx-auto px-4 py-3">
           <nav className="flex items-center text-sm text-gray-500 gap-2 flex-wrap">
@@ -156,20 +160,18 @@ export default function CarDetailPage() {
         </div>
       </div>
 
-      {/* ─── Main Content ─── */}
       <div className="container mx-auto px-4 py-6 lg:py-10">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16">
-
-          {/* ═══ LEFT: Swiper Gallery ═══ */}
+          {/* Gallery Column */}
           <div className="space-y-4">
             <div className="relative group">
               <Swiper
                 onSwiper={setMainSwiper}
                 spaceBetween={10}
                 navigation={true}
-                pagination={{ type: 'fraction' }}
+                pagination={swiperPagination}
                 thumbs={{ swiper: thumbsSwiper && !thumbsSwiper.destroyed ? thumbsSwiper : null }}
-                modules={[FreeMode, Navigation, Thumbs, Pagination]}
+                modules={swiperModules}
                 className="aspect-[4/3] rounded-3xl overflow-hidden bg-gray-50 border border-gray-100 shadow-sm"
               >
                 {allImages.map((img, idx) => (
@@ -185,7 +187,6 @@ export default function CarDetailPage() {
                   </SwiperSlide>
                 ))}
 
-                {/* Discount badge */}
                 {hasDiscount && (
                   <div className="absolute top-4 left-4 z-10 bg-red-500 text-white text-[10px] md:text-xs font-bold px-3 py-1.5 rounded-full shadow-lg uppercase tracking-wide">
                     Ưu đãi đặc biệt
@@ -198,7 +199,6 @@ export default function CarDetailPage() {
               </Swiper>
             </div>
 
-            {/* Thumbnails */}
             {allImages.length > 1 && (
               <div className="thumbs-container">
                 <Swiper
@@ -207,12 +207,8 @@ export default function CarDetailPage() {
                   slidesPerView={4}
                   freeMode={true}
                   watchSlidesProgress={true}
-                  modules={[FreeMode, Navigation, Thumbs]}
-                  breakpoints={{
-                    640: { slidesPerView: 5 },
-                    1024: { slidesPerView: 4 },
-                    1280: { slidesPerView: 5 },
-                  }}
+                  modules={thumbModules}
+                  breakpoints={swiperBreakpoints}
                   className="h-20 md:h-24"
                 >
                   {allImages.map((img, idx) => (
@@ -234,7 +230,7 @@ export default function CarDetailPage() {
             )}
           </div>
 
-          {/* ═══ RIGHT: Car Info ═══ */}
+          {/* Car Info Column */}
           <div className="flex flex-col">
             <div className="mb-6">
               <span className="inline-block bg-blue-50 text-blue-600 text-[11px] font-bold px-3 py-1 rounded-full mb-3 uppercase tracking-widest">
@@ -245,11 +241,10 @@ export default function CarDetailPage() {
               </h1>
             </div>
 
-            {/* Price Card */}
             <div className="bg-gradient-to-br from-[#0f4c81] to-[#1a6ab5] rounded-3xl p-6 lg:p-8 text-white shadow-xl shadow-blue-900/10 mb-8 relative overflow-hidden group">
               <div className="absolute -top-10 -right-10 w-40 h-40 bg-white/10 rounded-full blur-3xl group-hover:bg-white/20 transition-all duration-700" />
-
               <p className="text-blue-100/70 text-sm font-medium mb-2 uppercase tracking-wide">Giá niêm yết (Đã bao gồm VAT)</p>
+
               {hasDiscount ? (
                 <div>
                   <div className="flex items-baseline gap-3">
@@ -273,12 +268,11 @@ export default function CarDetailPage() {
               )}
             </div>
 
-            {/* Color Selector */}
-            {car.colors && car.colors.length > 0 && (
+            {Array.isArray(car.colors) && car.colors.length > 0 && (
               <div className="mb-8 p-6 bg-gray-50 rounded-2xl border border-gray-100">
                 <h3 className="text-sm font-bold text-gray-800 mb-4 flex items-center gap-2 uppercase tracking-wide">
                   <div className="w-1.5 h-4 bg-orange-500 rounded-full" />
-                  Lựa chọn màu sắc {selectedColorName && <span className="text-gray-400 font-medium">— {selectedColorName}</span>}
+                  Lựa chọn màu sắc {selectedColorName && <span className="text-gray-400 font-medium">- {selectedColorName}</span>}
                 </h3>
                 <div className="flex flex-wrap gap-4">
                   {car.colors.map((color) => {
@@ -287,13 +281,13 @@ export default function CarDetailPage() {
                       <button
                         key={color.id}
                         onClick={() => handleColorClick(color.id)}
-                        className={`group relative flex flex-col items-center gap-2 cursor-pointer transition-all duration-300`}
+                        className="group relative flex flex-col items-center gap-2 cursor-pointer transition-all duration-300"
                       >
                         <div
                           className={`
-                                w-12 h-12 rounded-full border-4 transition-all duration-300 p-0.5
-                                ${isActive ? 'border-[#0f4c81] scale-110 shadow-lg' : 'border-white hover:border-gray-300'}
-                                `}
+                            w-12 h-12 rounded-full border-4 transition-all duration-300 p-0.5
+                            ${isActive ? 'border-[#0f4c81] scale-110 shadow-lg' : 'border-white hover:border-gray-300'}
+                          `}
                         >
                           <div
                             className="w-full h-full rounded-full shadow-inner"
@@ -310,7 +304,6 @@ export default function CarDetailPage() {
               </div>
             )}
 
-            {/* CTA Group */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-auto">
               <button
                 onClick={() => openModal({ type: 'QUOTE', carModel: car.name })}
@@ -330,7 +323,6 @@ export default function CarDetailPage() {
           </div>
         </div>
 
-        {/* ─── Description Section ─── */}
         {car.description && (
           <div className="mt-16 lg:mt-24">
             <div className="flex items-center gap-4 mb-8">
@@ -350,35 +342,6 @@ export default function CarDetailPage() {
         )}
       </div>
 
-      <style jsx global>{`
-        .swiper-button-next, .swiper-button-prev {
-            background-color: white;
-            width: 44px;
-            height: 44px;
-            border-radius: 50%;
-            color: #0f4c81 !important;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        }
-        .swiper-button-next:after, .swiper-button-prev:after {
-            font-size: 18px !important;
-            font-weight: bold;
-        }
-        .swiper-pagination-fraction {
-            background: rgba(0,0,0,0.5);
-            color: white !important;
-            width: auto !important;
-            left: 50% !important;
-            transform: translateX(-50%) !important;
-            padding: 4px 12px !important;
-            border-radius: 20px !important;
-            font-size: 12px !important;
-            font-weight: 700 !important;
-        }
-        .swiper-slide-thumb-active .border-transparent {
-            border-color: #0f4c81 !important;
-            padding: 2px;
-        }
-      `}</style>
     </div>
   );
 }

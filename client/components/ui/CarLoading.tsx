@@ -23,38 +23,6 @@ const CarLoading = () => {
       </div>
       <p className="mt-4 text-blue-600 font-semibold animate-pulse">Đang tải...</p>
 
-      <style jsx>{`
-        @keyframes drive {
-          0% { transform: translateX(-100px); }
-          50% { transform: translateX(0); }
-          100% { transform: translateX(100px); opacity: 0; }
-        }
-        @keyframes slide-road {
-          0% { transform: translateX(0); }
-          100% { transform: translateX(-100%); }
-        }
-        @keyframes wind {
-           0% { transform: translateX(100%); opacity: 0; }
-           50% { opacity: 1; }
-           100% { transform: translateX(-200%); opacity: 0; }
-        }
-         @keyframes bounce-custom {
-          0%, 100% { transform: translateY(0); }
-          50% { transform: translateY(-2px); }
-        }
-        .animate-drive {
-          animation: drive 2s linear infinite;
-        }
-        .animate-slide-road {
-          animation: slide-road 1s linear infinite;
-        }
-         .animate-wind {
-          animation: wind 0.8s linear infinite;
-        }
-         .animate-bounce-custom {
-          animation: bounce-custom 0.5s ease-in-out infinite;
-        }
-      `}</style>
     </div>
   );
 };

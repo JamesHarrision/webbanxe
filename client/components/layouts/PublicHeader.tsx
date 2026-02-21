@@ -15,6 +15,8 @@ import {
 } from '@ant-design/icons';
 import { usePathname } from 'next/navigation';
 import { carService, Car } from '@/services/car.service';
+import { settingService, PublicSettings } from '@/services/setting.service';
+import { useQuery } from '@tanstack/react-query';
 
 const { Header } = Layout;
 
@@ -29,6 +31,11 @@ const PublicHeader: React.FC = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const pathname = usePathname();
   const [cars, setCars] = useState<Car[]>([]);
+
+  const { data: settings } = useQuery<PublicSettings>({
+    queryKey: ['publicSettings'],
+    queryFn: () => settingService.getPublicSettings(),
+  });
 
   useEffect(() => {
     const fetchCars = async () => {
@@ -53,14 +60,12 @@ const PublicHeader: React.FC = () => {
   const menuItems = [
     { key: '/', label: 'Trang chủ' },
     {
-      key: '/cars',
+      key: 'cars-submenu',
       label: 'Dòng xe cá nhân',
       children: carItems.length > 0 ? carItems : undefined
-      // If no children, it acts as a normal link or empty? 
-      // Antd Menu handles empty children fine usually, but let's keep it safe.
     },
     {
-      key: '/scooter',
+      key: 'scooter-submenu',
       label: 'Dòng xe VinFast Green',
       children: scooterItems.length > 0 ? scooterItems : undefined
     },
@@ -75,17 +80,54 @@ const PublicHeader: React.FC = () => {
       {/* Top Bar */}
       <div className="bg-[#0f4c81] text-white text-sm py-2 px-4 md:px-8 hidden md:flex justify-between items-center">
         <div className="flex gap-6">
-          <a href="mailto:thanhphuong129809@gmail.com" className="hover:text-gray-200 flex items-center gap-2">
-            <MailOutlined /> thanhphuong129809@gmail.com
-          </a>
-          <a href="tel:0939508085" className="hover:text-gray-200 flex items-center gap-2">
-            <PhoneOutlined /> 0939508085
-          </a>
+          {settings?.CONTACT_EMAIL && (
+            <a
+              href={`mailto:${settings.CONTACT_EMAIL}`}
+              className="hover:text-gray-200 flex items-center gap-2"
+            >
+              <MailOutlined /> {settings.CONTACT_EMAIL}
+            </a>
+          )}
+          {settings?.HOTLINE && (
+            <a
+              href={`tel:${settings.HOTLINE.replace(/\./g, '').replace(/\s/g, '')}`}
+              className="hover:text-gray-200 flex items-center gap-2"
+            >
+              <PhoneOutlined /> {settings.HOTLINE}
+            </a>
+          )}
         </div>
         <div className="flex gap-4 text-lg">
-          <a href="#" className="hover:text-gray-200"><FacebookFilled /></a>
-          <a href="#" className="hover:text-gray-200"><TikTokIcon /></a>
-          <a href="#" className="hover:text-gray-200"><YoutubeFilled /></a>
+          {settings?.FACEBOOK_URL && (
+            <a
+              href={settings.FACEBOOK_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-gray-200"
+            >
+              <FacebookFilled />
+            </a>
+          )}
+          {settings?.TIKTOK_URL && (
+            <a
+              href={settings.TIKTOK_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-gray-200"
+            >
+              <TikTokIcon />
+            </a>
+          )}
+          {settings?.YOUTUBE_URL && (
+            <a
+              href={settings.YOUTUBE_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-gray-200"
+            >
+              <YoutubeFilled />
+            </a>
+          )}
         </div>
       </div>
 

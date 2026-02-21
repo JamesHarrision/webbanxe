@@ -37,6 +37,8 @@ const SettingsPage = () => {
           ADDRESS: data.ADDRESS || '',
           ZALO_URL: data.ZALO_URL || '',
           FACEBOOK_URL: data.FACEBOOK_URL || '',
+          TIKTOK_URL: data.TIKTOK_URL || '',
+          YOUTUBE_URL: data.YOUTUBE_URL || '',
           BRANCHES: data.BRANCHES ? JSON.parse(data.BRANCHES) : [''],
         });
         smtpForm.setFieldsValue({
@@ -136,6 +138,14 @@ const SettingsPage = () => {
             </Form.Item>
             <Form.Item name="FACEBOOK_URL" label="Link Facebook Page">
               <Input placeholder="https://facebook.com/..." />
+            </Form.Item>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6">
+            <Form.Item name="TIKTOK_URL" label="Link TikTok">
+              <Input placeholder="https://tiktok.com/@..." />
+            </Form.Item>
+            <Form.Item name="YOUTUBE_URL" label="Link YouTube">
+              <Input placeholder="https://youtube.com/@..." />
             </Form.Item>
           </div>
 

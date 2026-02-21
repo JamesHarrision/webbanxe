@@ -13,7 +13,7 @@ const CarManagement = () => {
   const fetchCars = async () => {
     setLoading(true);
     try {
-      const data = await carService.getAll(true);
+      const data = await carService.getAll({ view: 'admin' });
       setCars(data);
     } catch (error) {
       message.error('Không thể tải danh sách xe');

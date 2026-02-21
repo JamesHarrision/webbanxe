@@ -27,3 +27,84 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* --- Shared Animations --- */
+@keyframes ping-custom {
+  75%, 100% {
+    transform: scale(2);
+    opacity: 0;
+  }
+}
+
+@keyframes drive {
+  0% { transform: translateX(-100px); }
+  50% { transform: translateX(0); }
+  100% { transform: translateX(100px); opacity: 0; }
+}
+
+@keyframes slide-road {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-100%); }
+}
+
+@keyframes wind {
+  0% { transform: translateX(100%); opacity: 0; }
+  50% { opacity: 1; }
+  100% { transform: translateX(-200%); opacity: 0; }
+}
+
+@keyframes bounce-custom {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-2px); }
+}
+
+/* --- Component Specific Styles --- */
+
+/* FloatingContactButtons */
+.animate-ping-custom {
+  animation: ping-custom 1.5s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+/* CarLoading */
+.animate-drive {
+  animation: drive 2s linear infinite;
+}
+.animate-slide-road {
+  animation: slide-road 1s linear infinite;
+}
+.animate-wind {
+  animation: wind 0.8s linear infinite;
+}
+.animate-bounce-custom {
+  animation: bounce-custom 0.5s ease-in-out infinite;
+}
+
+/* Swiper overrides (Car Detail Page) */
+.swiper-button-next, .swiper-button-prev {
+  background-color: white !important;
+  width: 44px !important;
+  height: 44px !important;
+  border-radius: 50% !important;
+  color: #0f4c81 !important;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1) !important;
+  z-index: 20 !important;
+}
+.swiper-button-next:after, .swiper-button-prev:after {
+  font-size: 18px !important;
+  font-weight: bold !important;
+}
+.swiper-pagination-fraction {
+  background: rgba(0,0,0,0.5) !important;
+  color: white !important;
+  width: auto !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  padding: 4px 12px !important;
+  border-radius: 20px !important;
+  font-size: 12px !important;
+  font-weight: 700 !important;
+}
+.swiper-slide-thumb-active .border-transparent {
+  border-color: #0f4c81 !important;
+  padding: 2px !important;
+}

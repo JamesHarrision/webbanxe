@@ -6,6 +6,8 @@ export interface PublicSettings {
   ADDRESS?: string;
   ZALO_URL?: string;
   FACEBOOK_URL?: string;
+  TIKTOK_URL?: string;
+  YOUTUBE_URL?: string;
   WEBSITE_NAME?: string;
   FOUNDER_NAME?: string;
   ROLE?: string;

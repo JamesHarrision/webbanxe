@@ -5,6 +5,7 @@ import * as settingService from '../services/setting.service';
 // Keys that are safe to expose to the public (NEVER include SMTP or secret keys)
 const PUBLIC_SETTING_KEYS = [
   'HOTLINE', 'CONTACT_EMAIL', 'ADDRESS', 'ZALO_URL', 'FACEBOOK_URL',
+  'TIKTOK_URL', 'YOUTUBE_URL',
   'WEBSITE_NAME', 'FOUNDER_NAME', 'ROLE', 'ABOUT_TEXT', 'DISCLAIMER', 'BRANCHES',
 ];
 
