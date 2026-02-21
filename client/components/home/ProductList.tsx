@@ -57,7 +57,7 @@ const CarCard: React.FC<CarCardProps> = ({ car, openModal }) => {
       onMouseLeave={e => (e.currentTarget.style.transform = 'translateY(0)')}
     >
       {/* Image */}
-      <div className="relative w-full h-52 bg-gradient-to-br from-slate-100 to-blue-50 overflow-hidden flex-shrink-0">
+      <Link href={`/cars/${car.slug || car.id}`} className="block relative w-full h-52 bg-gradient-to-br from-slate-100 to-blue-50 overflow-hidden flex-shrink-0 cursor-pointer">
         <Image
           alt={car.name}
           src={car.thumbnail || car.image || '/placeholder.svg'}
@@ -74,13 +74,15 @@ const CarCard: React.FC<CarCardProps> = ({ car, openModal }) => {
         <div className="absolute top-3 right-3 bg-[#0f4c81]/80 text-white text-xs px-2 py-1 rounded-full backdrop-blur-sm">
           VinFast
         </div>
-      </div>
+      </Link>
 
       {/* Content */}
       <div className="flex flex-col flex-1 p-4">
-        <h4 className="text-base font-bold text-gray-900 text-center mb-3 group-hover:text-[#0f4c81] transition-colors line-clamp-2">
-          {car.name}
-        </h4>
+        <Link href={`/cars/${car.slug || car.id}`} className="block hover:no-underline">
+          <h4 className="text-base font-bold text-gray-900 text-center mb-3 group-hover:text-[#0f4c81] transition-colors line-clamp-2 cursor-pointer">
+            {car.name}
+          </h4>
+        </Link>
         <div className="text-center mb-4 flex-1 flex flex-col justify-center">
           {hasDiscount ? (
             <>
@@ -100,10 +102,11 @@ const CarCard: React.FC<CarCardProps> = ({ car, openModal }) => {
           >
             Báo giá
           </button>
-          <Link href={`/cars/${car.slug || car.id}`} className="flex-1">
-            <button className="w-full border-2 border-[#0f4c81] text-[#0f4c81] hover:bg-[#0f4c81] hover:text-white text-sm font-semibold py-2 px-3 rounded-xl transition-all duration-200 cursor-pointer">
-              Chi tiết
-            </button>
+          <Link
+            href={`/cars/${car.slug || car.id}`}
+            className="flex-1 border-2 border-[#0f4c81] text-[#0f4c81] hover:bg-[#0f4c81] hover:text-white text-sm font-semibold py-2 px-3 rounded-xl transition-all duration-200 cursor-pointer flex items-center justify-center text-center"
+          >
+            Chi tiết
           </Link>
         </div>
       </div>
