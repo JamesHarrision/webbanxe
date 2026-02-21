@@ -52,3 +52,59 @@ export const getPublicSettings = async (req: Request, res: Response): Promise<vo
     res.status(500).json({ success: false, message: error.message });
   }
 };
+
+export const testSMTPConnection = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const settings = await prisma.setting.findMany({
+      where: { key: { in: ['SMTP_HOST', 'SMTP_PORT', 'SMTP_USER', 'SMTP_PASS', 'ADMIN_EMAIL'] } },
+    });
+    const config: Record<string, string> = {};
+    settings.forEach(s => { config[s.key] = s.value; });
+
+    const requiredKeys = ['SMTP_USER', 'SMTP_PASS', 'ADMIN_EMAIL'];
+    const missingKeys = requiredKeys.filter(k => !config[k]);
+
+    if (missingKeys.length > 0) {
+      res.status(400).json({
+        success: false,
+        message: `Thiếu cấu hình SMTP trong database: ${missingKeys.join(', ')}`,
+        missingKeys
+      });
+      return;
+    }
+
+    // Dynamic import
+    const { sendEmailNotification } = require('../utils/mailer.util');
+
+    const result = await sendEmailNotification(
+      '🔍 [TEST] Kiểm tra cấu hình SMTP',
+      `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; border: 1px solid #ddd; padding: 20px; border-radius: 10px;">
+          <h2 style="color: #1a73e8; text-align: center;">Hệ Thống Gửi Mail Hoạt Động!</h2>
+          <p>Chúc mừng! Nếu bạn nhận được email này, nghĩa là cấu hình SMTP của bạn đã chính xác.</p>
+          <hr/>
+          <p style="font-size: 12px; color: #777;">
+            Thời gian kiểm tra: ${new Date().toLocaleString('vi-VN')}
+          </p>
+        </div>
+      `
+    );
+
+    if (result.success) {
+      res.status(200).json({
+        success: true,
+        message: 'Kết nối SMTP thành công! Email kiểm tra đã được gửi.',
+        data: result
+      });
+    } else {
+      res.status(500).json({
+        success: false,
+        message: 'Kết nối SMTP thất bại: ' + result.message,
+        error: result
+      });
+    }
+  } catch (error: any) {
+    console.error("Test SMTP error:", error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+};

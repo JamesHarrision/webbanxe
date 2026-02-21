@@ -23,7 +23,7 @@ export const sendEmailNotification = async (subject: string, htmlContent: string
     // 2. Kiểm tra các trường bắt buộc
     if (!config.SMTP_USER || !config.SMTP_PASS || !config.ADMIN_EMAIL) {
       console.log('⚠️ [Mailer] Bỏ qua: Thiếu SMTP_USER, SMTP_PASS hoặc ADMIN_EMAIL trong Settings.');
-      return;
+      return { success: false, message: 'Missing SMTP configuration in database' };
     }
 
     const smtpHost = config.SMTP_HOST || 'smtp.gmail.com';
@@ -61,7 +61,14 @@ export const sendEmailNotification = async (subject: string, htmlContent: string
 
     const info = await transporter.sendMail(mailOptions);
     console.log('✅ [Mailer] Email đã gửi thành công tới ' + config.ADMIN_EMAIL + ' — ' + info.response);
+    return { success: true, message: 'Email sent successfully', response: info.response };
   } catch (error: any) {
     console.error('❌ [Mailer] Lỗi khi gửi email:', error?.message || error);
+    return {
+      success: false,
+      message: error?.message || 'Unknown error',
+      code: error?.code,
+      command: error?.command
+    };
   }
 };
