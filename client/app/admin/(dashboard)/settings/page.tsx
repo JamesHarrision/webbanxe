@@ -6,7 +6,7 @@ import {
 } from 'antd';
 import {
   SaveOutlined, MailOutlined, LockOutlined, CloudServerOutlined,
-  UserOutlined, GlobalOutlined, PhoneOutlined, BranchesOutlined, PlusOutlined, DeleteOutlined,
+  UserOutlined, GlobalOutlined, PhoneFilled, BranchesOutlined, PlusOutlined, DeleteOutlined,
 } from '@ant-design/icons';
 import { settingService } from '@/services/setting.service';
 
@@ -109,7 +109,7 @@ const SettingsPage = () => {
     },
     {
       key: 'contact',
-      label: <span className="flex items-center gap-1"><PhoneOutlined /> Liên hệ & Chi nhánh</span>,
+      label: <span className="flex items-center gap-1"><PhoneFilled className="-scale-x-100" /> Liên hệ & Chi nhánh</span>,
       children: (
         <Form
           form={contactForm}
@@ -123,7 +123,7 @@ const SettingsPage = () => {
         >
           <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6">
             <Form.Item name="HOTLINE" label="Số hotline">
-              <Input prefix={<PhoneOutlined className="text-gray-400" />} placeholder="0909 123 456" />
+              <Input prefix={<PhoneFilled className="text-gray-400 -scale-x-100" />} placeholder="0909 123 456" />
             </Form.Item>
             <Form.Item name="CONTACT_EMAIL" label="Email liên hệ">
               <Input prefix={<MailOutlined className="text-gray-400" />} placeholder="contact@vinfasttg.vn" />

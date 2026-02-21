@@ -3,7 +3,7 @@
 import React, { useEffect } from 'react';
 import { Form, Input, Select, Button, message } from 'antd';
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { UserOutlined, PhoneOutlined } from '@ant-design/icons';
+import { UserOutlined, PhoneFilled } from '@ant-design/icons';
 import axios from '@/lib/axios';
 import { carService } from '@/services/car.service';
 
@@ -87,7 +87,7 @@ const LeadForm: React.FC<LeadFormProps> = ({ onSuccess, initialValues, formName 
             { pattern: /^(84|0[3|5|7|8|9])+([0-9]{8})\b/, message: 'Số điện thoại không hợp lệ!' }
           ]}
         >
-          <Input prefix={<PhoneOutlined />} placeholder="Số điện thoại" size="large" />
+          <Input prefix={<PhoneFilled className="-scale-x-100" />} placeholder="Số điện thoại" size="large" />
         </Form.Item>
 
         <Form.Item name="serviceType" label="Nhu cầu" rules={[{ required: true }]}>

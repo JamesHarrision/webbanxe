@@ -8,7 +8,7 @@ import Link from 'next/link';
 import { Skeleton } from 'antd';
 import {
   LeftOutlined,
-  PhoneOutlined,
+  PhoneFilled,
   CarOutlined,
   InfoCircleOutlined,
   FullscreenOutlined,
@@ -306,7 +306,7 @@ export default function CarDetailPage() {
                 onClick={() => openModal({ type: 'QUOTE', carModel: car.name })}
                 className="group relative flex items-center justify-center gap-3 bg-orange-500 hover:bg-orange-600 text-white font-black py-5 px-8 rounded-2xl transition-all hover:scale-[1.02] active:scale-95 shadow-lg shadow-orange-500/20 uppercase tracking-widest text-sm cursor-pointer"
               >
-                <PhoneOutlined className="text-xl animate-pulse" />
+                <PhoneFilled className="text-xl animate-pulse -scale-x-100" />
                 Nhận báo giá ngay
               </button>
               <button

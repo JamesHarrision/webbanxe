@@ -6,7 +6,7 @@ import Link from 'next/link';
 import NextImage from 'next/image';
 import logo from '@/app/logo.png';
 import {
-  PhoneOutlined,
+  PhoneFilled,
   MailOutlined,
   FacebookFilled,
   YoutubeFilled,
@@ -93,7 +93,7 @@ const PublicHeader: React.FC = () => {
               href={`tel:${settings.HOTLINE.replace(/\./g, '').replace(/\s/g, '')}`}
               className="hover:text-gray-200 flex items-center gap-2"
             >
-              <PhoneOutlined /> {settings.HOTLINE}
+              <PhoneFilled className="-scale-x-100" /> {settings.HOTLINE}
             </a>
           )}
         </div>

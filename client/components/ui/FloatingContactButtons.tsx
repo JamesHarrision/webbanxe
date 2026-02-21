@@ -24,7 +24,7 @@ const FloatingContactButtons = () => {
           href={`tel:${cleanHotline}`}
           className="relative flex items-center justify-center w-12 h-12 bg-green-600 rounded-full text-white shadow-lg hover:bg-green-700 transition-colors cursor-pointer"
         >
-          <PhoneFilled className="text-xl" />
+          <PhoneFilled className="text-xl -scale-x-100" />
         </a>
         <span className="ml-3 bg-white px-3 py-1 rounded-full shadow-md text-sm font-semibold text-green-700 opacity-0 group-hover:opacity-100 transition-opacity absolute left-12 whitespace-nowrap">
           {hotline}

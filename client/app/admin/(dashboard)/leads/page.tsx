@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { Table, Select, Popconfirm, Button, Tag, App, Space } from 'antd';
-import { DeleteOutlined, PhoneOutlined, MailOutlined } from '@ant-design/icons';
+import { DeleteOutlined, PhoneFilled, MailOutlined } from '@ant-design/icons';
 import { leadService, Lead } from '@/services/lead.service';
 
 const statusOptions = [
@@ -79,7 +79,7 @@ const LeadManagement = () => {
       render: (_: any, record: Lead) => (
         <div className="space-y-1">
           <div className="flex items-center gap-1 text-sm">
-            <PhoneOutlined className="text-green-500" />
+            <PhoneFilled className="text-green-500 -scale-x-100" />
             <a href={`tel:${record.phone}`} className="text-blue-600 hover:underline">{record.phone}</a>
           </div>
           {record.email && (
