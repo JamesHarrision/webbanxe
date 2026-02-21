@@ -26,6 +26,7 @@ model Car {
   salePrice   Decimal? @db.Decimal(15, 2)
   category    String
   thumbnail   String
+  images      Json? // Mảng URL ảnh gallery (VD: ["url1", "url2"])
   description String?  @db.LongText
   isActive    Boolean  @default(true)
 
@@ -128,8 +129,40 @@ model Post {
 // ------------------------------------------------------
 model Setting {
   id    Int    @id @default(autoincrement())
-  key   String @unique // VD: 'SMTP_USER', 'SMTP_PASS', 'ADMIN_EMAIL'
+  key   String @unique // VD: 'SMTP_USER', 'SMTP_PASS', 'HOTLINE', 'WEBSITE_NAME'
   value String @db.Text
 
+  updatedAt DateTime @updatedAt
+}
+
+// ------------------------------------------------------
+// HERO SLIDER (Ảnh banner trang chủ)
+// ------------------------------------------------------
+model HeroSlide {
+  id       Int     @id @default(autoincrement())
+  imageUrl String
+  title    String?
+  link     String?
+  order    Int     @default(0)
+  isActive Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// ------------------------------------------------------
+// ĐÁNH GIÁ KHÁCH HÀNG (TESTIMONIALS)
+// ------------------------------------------------------
+model Testimonial {
+  id            Int     @id @default(autoincrement())
+  customerName  String
+  avatar        String? // Ảnh đại diện khách hàng
+  deliveryImage String? // Ảnh bàn giao xe thực tế
+  content       String  @db.Text
+  carModel      String?
+  rating        Int     @default(5)
+  isActive      Boolean @default(true)
+
+  createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }

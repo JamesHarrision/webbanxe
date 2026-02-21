@@ -8,6 +8,8 @@ import uploadRoutes from "./routes/upload.routes";
 import leadRoutes from "./routes/lead.routes";
 import postRoutes from "./routes/post.routes";
 import settingRoutes from "./routes/setting.routes";
+import heroSlideRoutes from "./routes/heroSlide.routes";
+import testimonialRoutes from "./routes/testimonial.routes";
 
 dotenv.config();
 
@@ -26,6 +28,8 @@ app.use('/api/v1/upload', uploadRoutes);
 app.use('/api/v1/leads', leadRoutes);
 app.use('/api/v1/posts', postRoutes);
 app.use('/api/v1/settings', settingRoutes);
+app.use('/api/v1/hero-slides', heroSlideRoutes);
+app.use('/api/v1/testimonials', testimonialRoutes);
 
 // Health check endpoint
 app.get('/api/v1/health', (req, res) => {

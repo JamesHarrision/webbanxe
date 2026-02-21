@@ -1,77 +1,118 @@
-'use strict';
 'use client';
 
 import React from 'react';
-import { Carousel, Button } from 'antd';
-import { RightOutlined } from '@ant-design/icons';
+import { useQuery } from '@tanstack/react-query';
+import { Button, Spin } from 'antd';
+import { RightOutlined, LoadingOutlined } from '@ant-design/icons';
 import NextImage from 'next/image';
-import logo from '@/app/logo.png';
+import Link from 'next/link';
+import { heroSlideService, HeroSlide } from '@/services/heroSlide.service';
+
+// Swiper
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Autoplay, Pagination, Navigation, EffectFade } from 'swiper/modules';
+
+// Swiper styles
+import 'swiper/css';
+import 'swiper/css/pagination';
+import 'swiper/css/navigation';
+import 'swiper/css/effect-fade';
 
 const HeroSlider = () => {
-  const slides = [
-    {
-      id: 1,
-      title: "MUA 1 TẶNG 1",
-      subtitle: "TỔNG GIÁ TRỊ ƯU ĐÃI LÊN ĐẾN 268 TRIỆU ĐỒNG",
-      description: "Sở hữu VinFast VF 8 - Nhận ngay Evo200 Lite. Áp dụng từ 03-31/10/2025.",
-      image: logo, // Use logo or placeholder
-      bgColor: "bg-blue-900"
-    },
-    {
-      id: 2,
-      title: "VINFAST VF 9",
-      subtitle: "MÃNH LIỆT TINH THẦN VIỆT NAM",
-      description: "Mẫu SUV điện hạng sang cỡ lớn 7 chỗ ngồi.",
-      image: logo, // Placeholder
-      bgColor: "bg-black"
-    },
-    {
-      id: 3,
-      title: "VINFAST VF 6",
-      subtitle: "GHI DẤU TỪNG KHOẢNH KHẮC",
-      description: "Tuyệt tác thiết kế - Công nghệ thông minh.",
-      image: logo, // Placeholder
-      bgColor: "bg-orange-700"
-    }
-  ];
+  const { data: slides, isLoading } = useQuery<HeroSlide[]>({
+    queryKey: ['publicHeroSlides'],
+    queryFn: () => heroSlideService.getPublic(),
+    staleTime: 5 * 60 * 1000,
+  });
+
+  if (isLoading) {
+    return (
+      <div className="h-[500px] md:h-[600px] w-full flex items-center justify-center bg-gray-900">
+        <Spin indicator={<LoadingOutlined style={{ fontSize: 40, color: '#f97316' }} spin />} />
+      </div>
+    );
+  }
+
+  if (!slides || slides.length === 0) {
+    return null;
+  }
 
   return (
-    <div className="relative hero-slider">
-      <Carousel autoplay effect="fade" autoplaySpeed={5000}>
+    <div className="relative hero-slider group">
+      <Swiper
+        modules={[Autoplay, Pagination, Navigation, EffectFade]}
+        effect="fade"
+        spaceBetween={0}
+        slidesPerView={1}
+        loop={slides.length > 1}
+        autoplay={{ delay: 5000, disableOnInteraction: false }}
+        pagination={{ clickable: true }}
+        navigation={true}
+        className="h-[500px] md:h-[600px] w-full"
+      >
         {slides.map((slide) => (
-          <div key={slide.id}>
-            <div className={`relative h-[500px] md:h-[600px] w-full flex items-center ${slide.bgColor}`}>
-              {/* Background Image Overlay */}
+          <SwiperSlide key={slide.id}>
+            <div className="relative h-full w-full flex items-center bg-black">
+              {/* Background Image */}
               <div className="absolute inset-0 z-0">
-                <NextImage src={slide.image} alt={slide.title} fill className="object-cover opacity-60" />
-                <div className="absolute inset-0 bg-gradient-to-r from-black/80 to-transparent" />
+                <NextImage
+                  src={slide.imageUrl}
+                  alt={slide.title || 'VinFast Slider'}
+                  fill
+                  className="object-cover"
+                  priority
+                />
+                <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/40 to-transparent" />
               </div>
 
               <div className="container mx-auto px-4 z-10 relative text-white">
-                <div className="max-w-2xl animate-fade-in-up">
-                  <h3 className="text-xl md:text-2xl font-bold text-orange-400 mb-2 uppercase tracking-wide">
-                    {slide.subtitle}
-                  </h3>
-                  <h2 className="text-4xl md:text-6xl font-extrabold mb-6 leading-tight">
-                    {slide.title}
-                  </h2>
-                  <p className="text-lg md:text-xl text-gray-200 mb-8 max-w-lg">
-                    {slide.description}
-                  </p>
-                  <div className="flex gap-4">
-                    <Button type="primary" size="large" className="bg-blue-600 hover:bg-blue-700 border-none h-12 px-8 font-bold text-lg rounded-none">
-                      ĐĂNG KÝ LÁI THỬ
-                    </Button>
-                    <Button ghost size="large" className="h-12 px-8 font-bold text-lg rounded-none hover:text-blue-400 hover:border-blue-400">
-                      XEM CHI TIẾT <RightOutlined />
-                    </Button>
-                  </div>
+                <div className="max-w-2xl">
+                  {slide.title && (
+                    <h2 className="text-4xl md:text-6xl font-extrabold mb-8 leading-tight animate-fade-in-up drop-shadow-lg">
+                      {slide.title}
+                    </h2>
+                  )}
                 </div>
               </div>
             </div>
-          </div>
+          </SwiperSlide>
         ))}
-      </Carousel>
+      </Swiper>
+
+      <style jsx global>{`
+        .hero-slider .swiper-button-next,
+        .hero-slider .swiper-button-prev {
+          color: white;
+          opacity: 0;
+          transition: opacity 0.3s ease;
+        }
+        .hero-slider:hover .swiper-button-next,
+        .hero-slider:hover .swiper-button-prev {
+          opacity: 0.6;
+        }
+        .hero-slider .swiper-button-next:hover,
+        .hero-slider .swiper-button-prev:hover {
+          opacity: 1;
+        }
+        .hero-slider .swiper-pagination-bullet {
+          background: white;
+          opacity: 0.5;
+        }
+        .hero-slider .swiper-pagination-bullet-active {
+          background: #f97316;
+          opacity: 1;
+          width: 24px;
+          border-radius: 4px;
+          transition: width 0.3s ease;
+        }
+        @keyframes fade-in-up {
+          from { opacity: 0; transform: translateY(20px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in-up {
+          animation: fade-in-up 0.8s ease-out forwards;
+        }
+      `}</style>
     </div>
   );
 };

@@ -1,10 +1,13 @@
 import { Router } from 'express';
-import { getSettings, updateSettings } from '../controllers/setting.controller';
+import { getSettings, updateSettings, getPublicSettings } from '../controllers/setting.controller';
 import { verifyToken } from '../middlewares/auth.middleware';
 
 const router = Router();
 
-// Toàn bộ Route Settings đều được bảo vệ
+// PUBLIC route - no auth required, only returns safe fields (no SMTP)
+router.get('/public', getPublicSettings);
+
+// Admin-only routes
 router.get('/', verifyToken, getSettings);
 router.put('/', verifyToken, updateSettings);
 

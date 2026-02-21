@@ -42,6 +42,10 @@ const CarForm: React.FC<CarFormProps> = ({ initialValues, isEdit = false }) => {
   const [uploading, setUploading] = useState(false);
   const [thumbnailUrl, setThumbnailUrl] = useState<string>(initialValues?.thumbnail || '');
 
+  // ── Gallery images state (Car Image Gallery) ──
+  const [galleryUrls, setGalleryUrls] = useState<string[]>(initialValues?.images || []);
+  const [galleryUploading, setGalleryUploading] = useState(false);
+
   // ── Color variant state ──
   // Tracks uploaded image URLs per Form.List row key
   const [colorImageUrls, setColorImageUrls] = useState<Record<number, string>>({});
@@ -63,6 +67,8 @@ const CarForm: React.FC<CarFormProps> = ({ initialValues, isEdit = false }) => {
         colors: colorsData,
       });
       setThumbnailUrl(initialValues.thumbnail || '');
+      // Pre-populate gallery images
+      setGalleryUrls(Array.isArray(initialValues.images) ? initialValues.images : []);
 
       // Pre-populate image URLs from existing color variants
       if (initialValues.colors) {
@@ -82,6 +88,7 @@ const CarForm: React.FC<CarFormProps> = ({ initialValues, isEdit = false }) => {
       const payload = {
         ...values,
         thumbnail: thumbnailUrl,
+        images: galleryUrls,
         price: Number(values.price),
         salePrice: values.salePrice ? Number(values.salePrice) : null,
         // Map colors from form values + uploaded image URLs
@@ -123,6 +130,28 @@ const CarForm: React.FC<CarFormProps> = ({ initialValues, isEdit = false }) => {
     } finally {
       setUploading(false);
     }
+  };
+
+  // ── Gallery: upload one or multiple images ──
+  const galleryUploadRequest = async (options: any) => {
+    const { onSuccess, onError, file } = options;
+    setGalleryUploading(true);
+    try {
+      const response = await uploadService.uploadImage(file);
+      const url = response.url || response;
+      setGalleryUrls((prev) => [...prev, url]);
+      onSuccess('Ok');
+      message.success('Upload ảnh gallery thành công');
+    } catch (err) {
+      onError({ err });
+      message.error('Upload ảnh gallery thất bại');
+    } finally {
+      setGalleryUploading(false);
+    }
+  };
+
+  const handleRemoveGalleryImage = (url: string) => {
+    setGalleryUrls((prev) => prev.filter((u) => u !== url));
   };
 
   // ── Per-color-row upload handler ──
@@ -292,7 +321,48 @@ const CarForm: React.FC<CarFormProps> = ({ initialValues, isEdit = false }) => {
         </Form.Item>
 
         {/* ══════════════════════════════════════════════════════ */}
-        {/* ═══ Color Variants Section ═══                       */}
+        {/* ═══ Car Image Gallery Section ═══                    */}
+        {/* ══════════════════════════════════════════════════════ */}
+        <Divider titlePlacement="left" style={{ borderColor: '#d1d5db' }}>
+          <span className="text-base font-semibold text-gray-700">🖼️ Gallery ảnh xe</span>
+        </Divider>
+
+        <Form.Item label="Bộ ảnh xe (nhiều ảnh)">
+          <div className="flex flex-col gap-4">
+            {/* Preview grid */}
+            {galleryUrls.length > 0 && (
+              <div className="flex flex-wrap gap-3">
+                {galleryUrls.map((url) => (
+                  <div key={url} className="relative w-32 h-24 border rounded overflow-hidden group">
+                    <AntImage src={url} alt="gallery" width={128} height={96} className="object-cover" />
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveGalleryImage(url)}
+                      className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+            <Upload
+              customRequest={galleryUploadRequest}
+              showUploadList={false}
+              accept="image/*"
+              multiple
+              disabled={galleryUploading}
+            >
+              <Button icon={galleryUploading ? <LoadingOutlined /> : <PlusOutlined />} loading={galleryUploading}>
+                {galleryUploading ? 'Đang tải lên...' : 'Thêm ảnh vào gallery'}
+              </Button>
+            </Upload>
+            {galleryUrls.length > 0 && (
+              <p className="text-xs text-gray-400">Di chuột vào ảnh và nhấn ✕ để xóa khỏi gallery</p>
+            )}
+          </div>
+        </Form.Item>
+
         {/* ══════════════════════════════════════════════════════ */}
         <Divider titlePlacement="left" style={{ borderColor: '#d1d5db' }}>
           <span className="text-base font-semibold text-gray-700">🎨 Biến thể màu sắc</span>

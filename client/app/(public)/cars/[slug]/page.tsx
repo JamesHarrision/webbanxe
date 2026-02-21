@@ -12,10 +12,23 @@ import {
   CarOutlined,
   CheckCircleOutlined,
   InfoCircleOutlined,
+  FullscreenOutlined,
 } from '@ant-design/icons';
-import { carService, Car, CarColor } from '@/services/car.service';
+import { carService, Car } from '@/services/car.service';
 import { useModal } from '@/context/ModalContext';
 import { formatCurrency, getNumericPrice } from '@/lib/format';
+
+// Swiper
+import { Swiper, SwiperSlide } from 'swiper/react';
+import type { Swiper as SwiperType } from 'swiper';
+import { Navigation, Pagination, Thumbs, FreeMode } from 'swiper/modules';
+
+// Swiper styles
+import 'swiper/css';
+import 'swiper/css/navigation';
+import 'swiper/css/pagination';
+import 'swiper/css/thumbs';
+import 'swiper/css/free-mode';
 
 // ─── Loading Skeleton ────────────────────────────────────
 const DetailSkeleton = () => (
@@ -63,6 +76,9 @@ export default function CarDetailPage() {
   const slug = params.slug as string;
   const { openModal } = useModal();
 
+  const [thumbsSwiper, setThumbsSwiper] = useState<SwiperType | null>(null);
+  const [mainSwiper, setMainSwiper] = useState<SwiperType | null>(null);
+
   const {
     data: car,
     isLoading,
@@ -76,15 +92,40 @@ export default function CarDetailPage() {
   // ── Color selection state ──
   const [selectedColorId, setSelectedColorId] = useState<number | null>(null);
 
-  // Determine which image to show based on selected color
-  const displayImage = useMemo(() => {
-    if (!car) return '/placeholder.svg';
-    if (selectedColorId && car.colors) {
-      const color = car.colors.find((c) => c.id === selectedColorId);
-      if (color?.imageUrl) return color.imageUrl;
+  // Combine thumbnail + gallery images + color images for a master gallery
+  const allImages = useMemo(() => {
+    if (!car) return [];
+    const images: { url: string; type: 'thumbnail' | 'gallery' | 'color'; colorId?: number }[] = [
+      { url: car.thumbnail, type: 'thumbnail' }
+    ];
+
+    // Add gallery images
+    if (car.images && car.images.length > 0) {
+      car.images.forEach(img => images.push({ url: img, type: 'gallery' }));
     }
-    return car.thumbnail || '/placeholder.svg';
-  }, [car, selectedColorId]);
+
+    // Add color images
+    if (car.colors && car.colors.length > 0) {
+      car.colors.forEach(col => images.push({ url: col.imageUrl, type: 'color', colorId: col.id }));
+    }
+
+    return images;
+  }, [car]);
+
+  // Handle color click
+  const handleColorClick = (colorId: number) => {
+    if (selectedColorId === colorId) {
+      setSelectedColorId(null);
+      if (mainSwiper) mainSwiper.slideTo(0);
+    } else {
+      setSelectedColorId(colorId);
+      // Find the index of this color image in allImages
+      const colorIndex = allImages.findIndex(img => img.colorId === colorId);
+      if (colorIndex !== -1 && mainSwiper) {
+        mainSwiper.slideTo(colorIndex);
+      }
+    }
+  };
 
   const selectedColorName = useMemo(() => {
     if (!car?.colors || !selectedColorId) return null;
@@ -101,9 +142,9 @@ export default function CarDetailPage() {
   if (isError || !car) return <DetailError />;
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-white">
       {/* ─── Breadcrumb ─── */}
-      <div className="bg-white border-b border-gray-100">
+      <div className="bg-gray-50 border-b border-gray-100">
         <div className="container mx-auto px-4 py-3">
           <nav className="flex items-center text-sm text-gray-500 gap-2 flex-wrap">
             <Link href="/" className="hover:text-[#0f4c81] transition-colors">
@@ -117,178 +158,172 @@ export default function CarDetailPage() {
 
       {/* ─── Main Content ─── */}
       <div className="container mx-auto px-4 py-6 lg:py-10">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
-          {/* ═══ LEFT: Image Gallery ═══ */}
-          <div>
-            {/* Main image */}
-            <div className="relative w-full aspect-[4/3] bg-gradient-to-br from-slate-50 to-blue-50 rounded-2xl overflow-hidden shadow-sm border border-gray-100">
-              <Image
-                src={displayImage}
-                alt={car.name}
-                fill
-                className="object-contain p-6"
-                sizes="(max-width: 1024px) 100vw, 50vw"
-                priority
-              />
-              {/* Discount badge */}
-              {hasDiscount && (
-                <div className="absolute top-4 left-4 bg-red-500 text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-lg uppercase tracking-wide">
-                  Khuyến mãi
-                </div>
-              )}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16">
+
+          {/* ═══ LEFT: Swiper Gallery ═══ */}
+          <div className="space-y-4">
+            <div className="relative group">
+              <Swiper
+                onSwiper={setMainSwiper}
+                spaceBetween={10}
+                navigation={true}
+                pagination={{ type: 'fraction' }}
+                thumbs={{ swiper: thumbsSwiper && !thumbsSwiper.destroyed ? thumbsSwiper : null }}
+                modules={[FreeMode, Navigation, Thumbs, Pagination]}
+                className="aspect-[4/3] rounded-3xl overflow-hidden bg-gray-50 border border-gray-100 shadow-sm"
+              >
+                {allImages.map((img, idx) => (
+                  <SwiperSlide key={idx} className="relative w-full h-full flex items-center justify-center p-4">
+                    <Image
+                      src={img.url}
+                      alt={car.name}
+                      fill
+                      className="object-contain p-4 md:p-8"
+                      sizes="(max-width: 1024px) 100vw, 50vw"
+                      priority={idx === 0}
+                    />
+                  </SwiperSlide>
+                ))}
+
+                {/* Discount badge */}
+                {hasDiscount && (
+                  <div className="absolute top-4 left-4 z-10 bg-red-500 text-white text-[10px] md:text-xs font-bold px-3 py-1.5 rounded-full shadow-lg uppercase tracking-wide">
+                    Ưu đãi đặc biệt
+                  </div>
+                )}
+
+                <button className="absolute bottom-4 right-4 z-10 bg-white/80 backdrop-blur-sm p-2 rounded-full text-gray-600 hover:text-[#0f4c81] transition-colors md:hidden">
+                  <FullscreenOutlined />
+                </button>
+              </Swiper>
             </div>
 
-            {/* Color swatches (below image on mobile, part of image area) */}
-            {car.colors && car.colors.length > 0 && (
-              <div className="mt-5">
-                <p className="text-sm font-semibold text-gray-600 mb-3">
-                  Màu sắc{selectedColorName && (
-                    <span className="font-normal text-gray-400"> — {selectedColorName}</span>
-                  )}
-                </p>
-                <div className="flex flex-wrap gap-3">
-                  {car.colors.map((color) => {
-                    const isActive = selectedColorId === color.id;
-                    return (
-                      <button
-                        key={color.id}
-                        title={color.colorName}
-                        onClick={() => setSelectedColorId(isActive ? null : color.id)}
-                        className={`
-                          w-10 h-10 rounded-full border-2 transition-all duration-200 cursor-pointer
-                          hover:scale-110 hover:shadow-md
-                          ${isActive
-                            ? 'border-[#0f4c81] ring-2 ring-[#0f4c81]/30 scale-110'
-                            : 'border-gray-200'
-                          }
-                        `}
-                        style={{ backgroundColor: color.colorHex }}
-                      />
-                    );
-                  })}
-                </div>
-              </div>
-            )}
-
-            {/* Thumbnail gallery of all color images */}
-            {car.colors && car.colors.length > 1 && (
-              <div className="mt-5 grid grid-cols-4 sm:grid-cols-5 gap-2">
-                {/* Thumbnail for default image */}
-                <button
-                  onClick={() => setSelectedColorId(null)}
-                  className={`
-                    relative aspect-square rounded-lg overflow-hidden border-2 cursor-pointer transition-all
-                    ${selectedColorId === null ? 'border-[#0f4c81] shadow-md' : 'border-gray-200 hover:border-gray-300'}
-                  `}
+            {/* Thumbnails */}
+            {allImages.length > 1 && (
+              <div className="thumbs-container">
+                <Swiper
+                  onSwiper={setThumbsSwiper}
+                  spaceBetween={12}
+                  slidesPerView={4}
+                  freeMode={true}
+                  watchSlidesProgress={true}
+                  modules={[FreeMode, Navigation, Thumbs]}
+                  breakpoints={{
+                    640: { slidesPerView: 5 },
+                    1024: { slidesPerView: 4 },
+                    1280: { slidesPerView: 5 },
+                  }}
+                  className="h-20 md:h-24"
                 >
-                  <Image
-                    src={car.thumbnail || '/placeholder.svg'}
-                    alt="Mặc định"
-                    fill
-                    className="object-contain p-1 bg-gray-50"
-                    sizes="100px"
-                  />
-                </button>
-                {car.colors.map((color) => (
-                  <button
-                    key={color.id}
-                    onClick={() => setSelectedColorId(color.id)}
-                    className={`
-                      relative aspect-square rounded-lg overflow-hidden border-2 cursor-pointer transition-all
-                      ${selectedColorId === color.id ? 'border-[#0f4c81] shadow-md' : 'border-gray-200 hover:border-gray-300'}
-                    `}
-                  >
-                    <Image
-                      src={color.imageUrl}
-                      alt={color.colorName}
-                      fill
-                      className="object-contain p-1 bg-gray-50"
-                      sizes="100px"
-                    />
-                  </button>
-                ))}
+                  {allImages.map((img, idx) => (
+                    <SwiperSlide key={idx} className="cursor-pointer">
+                      <div className="w-full h-full relative rounded-xl border-2 border-transparent transition-all overflow-hidden bg-gray-50">
+                        <Image
+                          src={img.url}
+                          alt={`Thumbnail ${idx}`}
+                          fill
+                          className="object-contain p-2"
+                          sizes="100px"
+                        />
+                        <div className="absolute inset-0 bg-black/5 opacity-0 hover:opacity-100 transition-opacity" />
+                      </div>
+                    </SwiperSlide>
+                  ))}
+                </Swiper>
               </div>
             )}
           </div>
 
           {/* ═══ RIGHT: Car Info ═══ */}
           <div className="flex flex-col">
-            {/* Car name */}
-            <h1 className="text-3xl lg:text-4xl font-extrabold text-gray-900 mb-4 leading-tight">
-              {car.name}
-            </h1>
+            <div className="mb-6">
+              <span className="inline-block bg-blue-50 text-blue-600 text-[11px] font-bold px-3 py-1 rounded-full mb-3 uppercase tracking-widest">
+                {car.category || 'VinFast EV'}
+              </span>
+              <h1 className="text-3xl lg:text-5xl font-extrabold text-gray-900 leading-tight">
+                {car.name}
+              </h1>
+            </div>
 
-            {/* Price section */}
-            <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100 mb-6">
-              <p className="text-xs text-gray-400 uppercase tracking-wider font-semibold mb-2">
-                Giá niêm yết
-              </p>
+            {/* Price Card */}
+            <div className="bg-gradient-to-br from-[#0f4c81] to-[#1a6ab5] rounded-3xl p-6 lg:p-8 text-white shadow-xl shadow-blue-900/10 mb-8 relative overflow-hidden group">
+              <div className="absolute -top-10 -right-10 w-40 h-40 bg-white/10 rounded-full blur-3xl group-hover:bg-white/20 transition-all duration-700" />
+
+              <p className="text-blue-100/70 text-sm font-medium mb-2 uppercase tracking-wide">Giá niêm yết (Đã bao gồm VAT)</p>
               {hasDiscount ? (
                 <div>
-                  <div className="text-gray-400 line-through text-lg font-medium">
-                    {formatCurrency(car.price)}
+                  <div className="flex items-baseline gap-3">
+                    <span className="text-4xl lg:text-5xl font-black">
+                      {formatCurrency(car.salePrice)}
+                    </span>
+                    <span className="text-lg text-blue-200/60 line-through">
+                      {formatCurrency(car.price)}
+                    </span>
                   </div>
-                  <div className="text-orange-500 font-extrabold text-3xl lg:text-4xl mt-1">
-                    {formatCurrency(car.salePrice)}
-                  </div>
-                  <div className="inline-flex items-center gap-1.5 bg-green-50 text-green-600 text-sm font-semibold px-3 py-1 rounded-full mt-2">
-                    <CheckCircleOutlined />
-                    Tiết kiệm {formatCurrency(priceNum - salePriceNum)}
+                  <div className="mt-4 flex items-center gap-2">
+                    <div className="bg-orange-500 text-white text-xs font-bold px-3 py-1 rounded-full">
+                      TIẾT KIỆM {formatCurrency(priceNum - salePriceNum)}
+                    </div>
                   </div>
                 </div>
               ) : (
-                <div className="text-orange-500 font-extrabold text-3xl lg:text-4xl">
+                <div className="text-4xl lg:text-5xl font-black">
                   {formatCurrency(car.price)}
                 </div>
               )}
             </div>
 
-            {/* Color selector (compact, right side - desktop only) */}
+            {/* Color Selector */}
             {car.colors && car.colors.length > 0 && (
-              <div className="hidden lg:block mb-6">
-                <p className="text-sm font-semibold text-gray-600 mb-2">
-                  {car.colors.length} màu sắc có sẵn
-                </p>
-                <div className="flex flex-wrap gap-2">
-                  {car.colors.map((color) => (
-                    <button
-                      key={color.id}
-                      onClick={() =>
-                        setSelectedColorId(selectedColorId === color.id ? null : color.id)
-                      }
-                      className={`
-                        flex items-center gap-2 px-3 py-2 rounded-lg border text-sm transition-all cursor-pointer
-                        ${selectedColorId === color.id
-                          ? 'border-[#0f4c81] bg-[#0f4c81]/5 text-[#0f4c81] font-semibold'
-                          : 'border-gray-200 text-gray-600 hover:border-gray-300'
-                        }
-                      `}
-                    >
-                      <span
-                        className="w-5 h-5 rounded-full border border-gray-300 flex-shrink-0"
-                        style={{ backgroundColor: color.colorHex }}
-                      />
-                      {color.colorName}
-                    </button>
-                  ))}
+              <div className="mb-8 p-6 bg-gray-50 rounded-2xl border border-gray-100">
+                <h3 className="text-sm font-bold text-gray-800 mb-4 flex items-center gap-2 uppercase tracking-wide">
+                  <div className="w-1.5 h-4 bg-orange-500 rounded-full" />
+                  Lựa chọn màu sắc {selectedColorName && <span className="text-gray-400 font-medium">— {selectedColorName}</span>}
+                </h3>
+                <div className="flex flex-wrap gap-4">
+                  {car.colors.map((color) => {
+                    const isActive = selectedColorId === color.id;
+                    return (
+                      <button
+                        key={color.id}
+                        onClick={() => handleColorClick(color.id)}
+                        className={`group relative flex flex-col items-center gap-2 cursor-pointer transition-all duration-300`}
+                      >
+                        <div
+                          className={`
+                                w-12 h-12 rounded-full border-4 transition-all duration-300 p-0.5
+                                ${isActive ? 'border-[#0f4c81] scale-110 shadow-lg' : 'border-white hover:border-gray-300'}
+                                `}
+                        >
+                          <div
+                            className="w-full h-full rounded-full shadow-inner"
+                            style={{ backgroundColor: color.colorHex }}
+                          />
+                        </div>
+                        <span className={`text-[10px] font-bold uppercase transition-colors ${isActive ? 'text-[#0f4c81]' : 'text-gray-400'}`}>
+                          {color.colorName}
+                        </span>
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
             )}
 
-            {/* CTA Buttons */}
-            <div className="flex flex-col sm:flex-row gap-3 mt-auto">
+            {/* CTA Group */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-auto">
               <button
                 onClick={() => openModal({ type: 'QUOTE', carModel: car.name })}
-                className="flex-1 flex items-center justify-center gap-2 bg-[#0f4c81] hover:bg-[#1a6ab5] text-white font-bold py-4 px-6 rounded-xl transition-colors text-base cursor-pointer shadow-lg shadow-[#0f4c81]/20"
+                className="group relative flex items-center justify-center gap-3 bg-orange-500 hover:bg-orange-600 text-white font-black py-5 px-8 rounded-2xl transition-all hover:scale-[1.02] active:scale-95 shadow-lg shadow-orange-500/20 uppercase tracking-widest text-sm"
               >
-                <PhoneOutlined className="text-lg" />
-                Liên hệ tư vấn
+                <PhoneOutlined className="text-xl animate-pulse" />
+                Nhận báo giá ngay
               </button>
               <button
                 onClick={() => openModal({ type: 'TEST_DRIVE', carModel: car.name })}
-                className="flex-1 flex items-center justify-center gap-2 border-2 border-[#0f4c81] text-[#0f4c81] hover:bg-[#0f4c81] hover:text-white font-bold py-4 px-6 rounded-xl transition-all text-base cursor-pointer"
+                className="flex items-center justify-center gap-3 border-2 border-[#0f4c81] text-[#0f4c81] hover:bg-[#0f4c81] hover:text-white font-black py-5 px-8 rounded-2xl transition-all hover:scale-[1.02] active:scale-95 uppercase tracking-widest text-sm"
               >
-                <CarOutlined className="text-lg" />
+                <CarOutlined className="text-xl" />
                 Đăng ký lái thử
               </button>
             </div>
@@ -297,22 +332,53 @@ export default function CarDetailPage() {
 
         {/* ─── Description Section ─── */}
         {car.description && (
-          <div className="mt-12 lg:mt-16">
-            <h2 className="text-2xl font-bold text-[#0f4c81] mb-6 flex items-center gap-2">
-              <InfoCircleOutlined />
-              Thông tin chi tiết
-            </h2>
+          <div className="mt-16 lg:mt-24">
+            <div className="flex items-center gap-4 mb-8">
+              <h2 className="text-2xl lg:text-3xl font-black text-[#0f4c81] uppercase tracking-tight">Thông số & Chi tiết</h2>
+              <div className="flex-1 h-px bg-gray-100" />
+            </div>
             <div
-              className="bg-white rounded-2xl p-6 lg:p-10 shadow-sm border border-gray-100
+              className="bg-white rounded-[2rem] p-8 lg:p-16 shadow-xl shadow-gray-200/50 border border-gray-100
                 prose prose-lg max-w-none
-                prose-headings:text-[#0f4c81] prose-headings:font-bold
-                prose-a:text-[#0f4c81] prose-a:no-underline hover:prose-a:underline
-                prose-img:rounded-xl prose-img:shadow-md"
+                prose-headings:text-[#0f4c81] prose-headings:font-black
+                prose-p:text-gray-600 prose-p:leading-relaxed
+                prose-a:text-blue-600 prose-a:font-bold prose-a:no-underline hover:prose-a:underline
+                prose-img:rounded-3xl prose-img:shadow-2xl prose-img:mx-auto"
               dangerouslySetInnerHTML={{ __html: car.description }}
             />
           </div>
         )}
       </div>
+
+      <style jsx global>{`
+        .swiper-button-next, .swiper-button-prev {
+            background-color: white;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            color: #0f4c81 !important;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .swiper-button-next:after, .swiper-button-prev:after {
+            font-size: 18px !important;
+            font-weight: bold;
+        }
+        .swiper-pagination-fraction {
+            background: rgba(0,0,0,0.5);
+            color: white !important;
+            width: auto !important;
+            left: 50% !important;
+            transform: translateX(-50%) !important;
+            padding: 4px 12px !important;
+            border-radius: 20px !important;
+            font-size: 12px !important;
+            font-weight: 700 !important;
+        }
+        .swiper-slide-thumb-active .border-transparent {
+            border-color: #0f4c81 !important;
+            padding: 2px;
+        }
+      `}</style>
     </div>
   );
 }

@@ -8,7 +8,9 @@ import {
   FileTextOutlined,
   UserOutlined,
   LogoutOutlined,
-  SettingOutlined
+  SettingOutlined,
+  PictureOutlined,
+  StarOutlined,
 } from '@ant-design/icons';
 import { useRouter, usePathname } from 'next/navigation';
 import { useAuthStore } from '@/store/authStore';
@@ -73,6 +75,16 @@ export default function AdminDashboardLayout({
               key: '/admin/posts',
               icon: <FileTextOutlined />,
               label: <Link href="/admin/posts">Tin tức / Bài viết</Link>,
+            },
+            {
+              key: '/admin/hero-slides',
+              icon: <PictureOutlined />,
+              label: <Link href="/admin/hero-slides">Hero Slider</Link>,
+            },
+            {
+              key: '/admin/testimonials',
+              icon: <StarOutlined />,
+              label: <Link href="/admin/testimonials">Đánh giá KH</Link>,
             },
             {
               key: '/admin/settings',

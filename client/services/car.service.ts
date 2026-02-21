@@ -16,6 +16,7 @@ export interface Car {
   salePrice?: number | string;
   category: string;
   thumbnail: string;
+  images?: string[]; // Gallery image URLs
   description?: string;
   isActive: boolean;
   colors?: CarColor[];

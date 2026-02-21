@@ -3,8 +3,6 @@ import { deleteCloudinaryImages, extractCloudinaryIdsFromHtml, extractPublicIdFr
 
 // Lấy danh sách xe (Public thì chỉ lấy xe đang active, Admin thì lấy tất cả)
 export const getCars = async (isAdmin: boolean = false) => {
-  // If isAdmin is true, we pass an empty object to where, effectively selecting all.
-  // If isAdmin is false, we filter by isActive: true.
   const whereClause = isAdmin ? {} : { isActive: true };
 
   return await prisma.car.findMany({
@@ -22,12 +20,14 @@ export const getCarByIdOrSlug = async (identifier: string | number) => {
   return await prisma.car.findUnique({ where: { slug: identifier }, include: { colors: true } });
 };
 
-// Thêm mới xe kèm màu sắc
+// Thêm mới xe kèm màu sắc (images là array string sẽ được lưu dạng Json)
 export const createCar = async (data: any) => {
-  const { colors, ...carData } = data;
+  const { colors, images, ...carData } = data;
   return await prisma.car.create({
     data: {
       ...carData,
+      // Lưu mảng URL gallery dưới dạng Json
+      images: images && images.length > 0 ? images : undefined,
       // Nếu có mảng colors thì tạo luôn các bản ghi CarColor (Nested Create)
       colors: colors && colors.length > 0 ? { create: colors } : undefined,
     },
@@ -37,9 +37,13 @@ export const createCar = async (data: any) => {
 
 // Cập nhật xe (Sử dụng Transaction để xóa màu cũ, thêm màu mới cho an toàn)
 export const updateCar = async (id: number, data: any) => {
-  const { colors, ...carData } = data;
+  const { colors, images, ...carData } = data;
 
-  return await prisma.$transaction(async (tx) => {
+  // Lấy thông tin xe CŨ để so sánh và dọn dẹp Cloudinary nếu cần
+  const existingCar = await prisma.car.findUnique({ where: { id } });
+  if (!existingCar) throw new Error('Không tìm thấy xe!');
+
+  const updatedCar = await prisma.$transaction(async (tx) => {
     // Nếu có truyền mảng colors mới, ta xóa hết màu cũ của xe này đi
     if (colors) {
       await tx.carColor.deleteMany({ where: { carId: id } });
@@ -50,11 +54,29 @@ export const updateCar = async (id: number, data: any) => {
       where: { id },
       data: {
         ...carData,
+        ...(images !== undefined ? { images } : {}),
         ...(colors ? { colors: { create: colors } } : {}),
       },
       include: { colors: true },
     });
   });
+
+  // Dọn dẹp Cloudinary: Xóa các ảnh gallery cũ không còn trong array mới
+  if (images !== undefined && existingCar.images) {
+    const oldImages = existingCar.images as string[];
+    const newImages: string[] = images ?? [];
+    const orphanedImages = oldImages.filter(url => !newImages.includes(url));
+    if (orphanedImages.length > 0) {
+      const orphanedIds = orphanedImages
+        .map(url => extractPublicIdFromUrl(url))
+        .filter((pid): pid is string => pid !== null);
+      if (orphanedIds.length > 0) {
+        deleteCloudinaryImages(orphanedIds);
+      }
+    }
+  }
+
+  return updatedCar;
 };
 
 // Xóa xe (Prisma sẽ tự động xóa các CarColor liên quan do ta đã set onDelete: Cascade trong schema)
@@ -86,13 +108,24 @@ export const deleteCar = async (id: number) => {
     publicIdsToDelete.push(...htmlImgIds);
   }
 
+  // Ảnh trong gallery (images JSON array)
+  if (car.images) {
+    const galleryUrls = car.images as string[];
+    galleryUrls.forEach(url => {
+      const galleryImgId = extractPublicIdFromUrl(url);
+      if (galleryImgId) publicIdsToDelete.push(galleryImgId);
+    });
+  }
+
   // 3. Xóa dữ liệu xe trong MySQL trước
   const result = await prisma.car.delete({
     where: { id }
   });
 
-  // 4. Xóa ảnh trên Cloudinary (Chạy bất đồng bộ, không dùng await để ko làm nghẽn API Response của Admin)
-  deleteCloudinaryImages(publicIdsToDelete);
+  // 4. Xóa tất cả ảnh trên Cloudinary bằng Promise.all
+  if (publicIdsToDelete.length > 0) {
+    deleteCloudinaryImages(publicIdsToDelete);
+  }
 
   return result;
 };
