@@ -325,7 +325,7 @@ export default function CarDetailClient({ slug }: { slug: string }) {
             </div>
             <div
               className="bg-white rounded-[2rem] p-8 lg:p-16 shadow-xl shadow-gray-200/50 border border-gray-100
-                prose max-w-none prose-img:rounded-xl prose-img:mx-auto"
+                prose prose-sm md:prose-base lg:prose-lg max-w-none prose-img:rounded-xl prose-img:mx-auto rich-text-content"
               dangerouslySetInnerHTML={{ __html: car.description }}
             />
           </div>

@@ -131,7 +131,7 @@ export default function NewsDetailClient({ slug }: { slug: string }) {
         {/* Content */}
         <div
           className="bg-white rounded-2xl p-6 lg:p-10 shadow-sm border border-gray-100
-            prose max-w-none prose-img:rounded-xl prose-img:mx-auto"
+            prose prose-sm md:prose-base lg:prose-lg max-w-none prose-img:rounded-xl prose-img:mx-auto rich-text-content"
           dangerouslySetInnerHTML={{ __html: post.content }}
         />
 
