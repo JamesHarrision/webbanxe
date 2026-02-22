@@ -1,11 +1,10 @@
 'use client';
 
 import React from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { StarFilled, UserOutlined, LoadingOutlined, CameraOutlined } from '@ant-design/icons';
-import { Spin, Avatar } from 'antd';
+import { StarFilled, UserOutlined, CameraOutlined } from '@ant-design/icons';
+import { Avatar } from 'antd';
 import Image from 'next/image';
-import { testimonialService, Testimonial } from '@/services/testimonial.service';
+import { Testimonial } from '@/services/testimonial.service';
 
 // Swiper
 import { Swiper, SwiperSlide } from 'swiper/react';
@@ -15,21 +14,11 @@ import { Autoplay, Pagination, A11y } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/pagination';
 
-const Testimonials = () => {
-  const { data: reviews, isLoading } = useQuery<Testimonial[]>({
-    queryKey: ['publicTestimonials'],
-    queryFn: () => testimonialService.getPublic(),
-    staleTime: 5 * 60 * 1000,
-  });
+interface TestimonialsProps {
+  reviews?: Testimonial[];
+}
 
-  if (isLoading) {
-    return (
-      <div className="py-20 text-center">
-        <Spin indicator={<LoadingOutlined style={{ fontSize: 32 }} spin />} />
-      </div>
-    );
-  }
-
+const Testimonials: React.FC<TestimonialsProps> = ({ reviews = [] }) => {
   if (!reviews || reviews.length === 0) {
     return null;
   }

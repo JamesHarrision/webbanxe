@@ -3,9 +3,9 @@
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { carService, Car } from '@/services/car.service';
-import { accessoryService, Accessory } from '@/services/accessory.service';
-import { insuranceService, Insurance } from '@/services/insurance.service';
+import { Car } from '@/services/car.service';
+import { Accessory } from '@/services/accessory.service';
+import { Insurance } from '@/services/insurance.service';
 import { useModal } from '@/context/ModalContext';
 
 // Swiper
@@ -170,32 +170,14 @@ const InsuranceCard: React.FC<{ item: Insurance }> = ({ item }) => {
   );
 };
 
-const ProductList = () => {
-  const [cars, setCars] = React.useState<Car[]>([]);
-  const [accessories, setAccessories] = React.useState<Accessory[]>([]);
-  const [insurances, setInsurances] = React.useState<Insurance[]>([]);
-  const [loading, setLoading] = React.useState(true);
-  const { openModal } = useModal();
+interface ProductListProps {
+  cars: Car[];
+  accessories: Accessory[];
+  insurances: Insurance[];
+}
 
-  React.useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const [carData, accData, insData] = await Promise.all([
-          carService.getAll({ view: 'public' }),
-          accessoryService.getAccessories(),
-          insuranceService.getInsurances(),
-        ]);
-        setCars(carData);
-        setAccessories(accData);
-        setInsurances(insData);
-      } catch (error) {
-        console.error('Failed to fetch product data:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchData();
-  }, []);
+const ProductList: React.FC<ProductListProps> = ({ cars = [], accessories = [], insurances = [] }) => {
+  const { openModal } = useModal();
 
   const personalCars = cars.filter(c => c.category === 'car' || c.category === 'Dòng xe cá nhân');
   const greenCars = cars.filter(c => c.category === 'greencar' || c.category === 'Dòng xe VinFast Green');
@@ -208,13 +190,7 @@ const ProductList = () => {
           <div className="flex-1 h-0.5 bg-gray-100" />
         </div>
 
-        {loading ? (
-          <div className="grid grid-cols-2 gap-4">
-            {[...Array(2)].map((_, i) => (
-              <div key={i} className="bg-gray-50 rounded-2xl h-64 animate-pulse border border-gray-100" />
-            ))}
-          </div>
-        ) : list.length > 0 ? (
+        {list.length > 0 ? (
           <Swiper
             modules={[Navigation, Pagination, A11y]}
             spaceBetween={16}

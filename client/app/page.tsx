@@ -1,32 +1,47 @@
-'use client';
-
-import React, { useEffect } from 'react';
+import React from 'react';
 import PublicLayout from '@/components/layouts/PublicLayout';
 import LeadForm from '@/components/forms/LeadForm';
-import { Button } from 'antd';
 import { ThunderboltOutlined, SafetyCertificateOutlined, DollarOutlined } from '@ant-design/icons';
 import HeroSlider from '@/components/home/HeroSlider';
 import ProductList from '@/components/home/ProductList';
 import Testimonials from '@/components/home/Testimonials';
-import { useModal } from '@/context/ModalContext';
+import HomeClient from '@/components/home/HomeClient';
+import { carService } from '@/services/car.service';
+import { settingService } from '@/services/setting.service';
+import { heroSlideService } from '@/services/heroSlide.service';
+import { accessoryService } from '@/services/accessory.service';
+import { insuranceService } from '@/services/insurance.service';
+import { testimonialService } from '@/services/testimonial.service';
 
-
-export default function Home() {
-  const { openModal } = useModal();
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      openModal({ type: 'QUOTE' });
-    }, 5000);
-
-    return () => clearTimeout(timer);
-  }, [openModal]);
+export default async function Home() {
+  // Fetch all data on the server
+  const [
+    settings,
+    cars,
+    slides,
+    accessories,
+    insurances,
+    testimonials
+  ] = await Promise.all([
+    settingService.getPublicSettings(),
+    carService.getAll({ view: 'public' }),
+    heroSlideService.getPublic(),
+    accessoryService.getAccessories(),
+    insuranceService.getInsurances(),
+    testimonialService.getPublic(),
+  ]);
 
   return (
-    <PublicLayout>
-      <HeroSlider />
+    <PublicLayout settings={settings} cars={cars}>
+      <HomeClient />
 
-      <ProductList />
+      <HeroSlider slides={slides} />
+
+      <ProductList
+        cars={cars}
+        accessories={accessories}
+        insurances={insurances}
+      />
 
       {/* Features Section */}
       <section className="py-8 bg-white">
@@ -73,7 +88,7 @@ export default function Home() {
         </div>
       </section>
 
-      <Testimonials />
+      <Testimonials reviews={testimonials} />
 
       {/* Lead Form Section */}
       <section className="py-16 bg-blue-50">
@@ -86,7 +101,7 @@ export default function Home() {
               </p>
               <div className="bg-white p-6 rounded-lg shadow-md border-l-4 border-orange-500">
                 <h4 className="font-bold text-gray-800 mb-2 uppercase">Hotline Kinh Doanh</h4>
-                <p className="text-3xl font-bold text-orange-600">0939.508.085</p>
+                <p className="text-3xl font-bold text-orange-600">{settings?.HOTLINE || '0939.508.085'}</p>
               </div>
             </div>
 

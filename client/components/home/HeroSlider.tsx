@@ -1,12 +1,8 @@
 'use client';
 
 import React from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { Button, Spin } from 'antd';
-import { RightOutlined, LoadingOutlined } from '@ant-design/icons';
 import NextImage from 'next/image';
-import Link from 'next/link';
-import { heroSlideService, HeroSlide } from '@/services/heroSlide.service';
+import { HeroSlide } from '@/services/heroSlide.service';
 
 // Swiper
 import { Swiper, SwiperSlide } from 'swiper/react';
@@ -18,21 +14,11 @@ import 'swiper/css/pagination';
 import 'swiper/css/navigation';
 import 'swiper/css/effect-fade';
 
-const HeroSlider = () => {
-  const { data: slides, isLoading } = useQuery<HeroSlide[]>({
-    queryKey: ['publicHeroSlides'],
-    queryFn: () => heroSlideService.getPublic(),
-    staleTime: 5 * 60 * 1000,
-  });
+interface HeroSliderProps {
+  slides?: HeroSlide[];
+}
 
-  if (isLoading) {
-    return (
-      <div className="h-[500px] md:h-[600px] w-full flex items-center justify-center bg-gray-900">
-        <Spin indicator={<LoadingOutlined style={{ fontSize: 40, color: '#f97316' }} spin />} />
-      </div>
-    );
-  }
-
+const HeroSlider: React.FC<HeroSliderProps> = ({ slides = [] }) => {
   if (!slides || slides.length === 0) {
     return null;
   }
@@ -78,7 +64,6 @@ const HeroSlider = () => {
           </SwiperSlide>
         ))}
       </Swiper>
-
     </div>
   );
 };

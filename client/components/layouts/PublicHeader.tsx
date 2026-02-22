@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Layout, Menu, Drawer, Button } from 'antd';
 import Link from 'next/link';
 import NextImage from 'next/image';
@@ -14,43 +14,29 @@ import {
   DownOutlined
 } from '@ant-design/icons';
 import { usePathname } from 'next/navigation';
-import { carService, Car } from '@/services/car.service';
-import { settingService, PublicSettings } from '@/services/setting.service';
-import { useQuery } from '@tanstack/react-query';
+import { Car } from '@/services/car.service';
+import { PublicSettings } from '@/services/setting.service';
 
 const { Header } = Layout;
 
-// Custom TikTok icon if needed, or use a placeholder
+// Custom TikTok icon
 const TikTokIcon = () => (
   <svg viewBox="0 0 24 24" fill="currentColor" width="1em" height="1em" className="inline-block align-middle">
     <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z" />
   </svg>
 );
 
-const PublicHeader: React.FC = () => {
+interface PublicHeaderProps {
+  settings?: PublicSettings;
+  cars?: Car[];
+}
+
+const PublicHeader: React.FC<PublicHeaderProps> = ({ settings, cars = [] }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const pathname = usePathname();
-  const [cars, setCars] = useState<Car[]>([]);
-
-  const { data: settings } = useQuery<PublicSettings>({
-    queryKey: ['publicSettings'],
-    queryFn: () => settingService.getPublicSettings(),
-  });
-
-  useEffect(() => {
-    const fetchCars = async () => {
-      try {
-        const data = await carService.getAll({ view: 'public' });
-        setCars(data);
-      } catch (error) {
-        console.error('Failed to fetch cars for menu:', error);
-      }
-    };
-    fetchCars();
-  }, []);
 
   const carItems = cars
-    .filter((c) => c.category === 'car' || c.category === 'Dòng xe cá nhân') // Handle both old and new values just in case
+    .filter((c) => c.category === 'car' || c.category === 'Dòng xe cá nhân')
     .map((c) => ({ key: `/cars/${c.slug}`, label: c.name }));
 
   const greencarItems = cars
@@ -188,7 +174,7 @@ const PublicHeader: React.FC = () => {
         <div className="lg:hidden flex">
           <Button
             type="text"
-            icon={<MenuOutlined className="text-2xl" style={{ color: 'white' }} />}
+            icon={<MenuOutlined className="text-2xl text-[#0f4c81]" />}
             onClick={() => setMobileMenuOpen(true)}
           />
         </div>

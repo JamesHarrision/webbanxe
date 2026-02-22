@@ -1,72 +1,24 @@
-'use client';
-
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import PublicHeader from './PublicHeader';
 import PublicFooter from './PublicFooter';
-import FloatingContactButtons from '@/components/ui/FloatingContactButtons';
-import { Layout } from 'antd';
-import { ModalProvider, useModal } from '@/context/ModalContext';
-import LeadModal from '@/components/modals/LeadModal';
-import CarLoading from '@/components/ui/CarLoading'; // Import Splash Screen
+import PublicLayoutClient from './PublicLayoutClient';
+import { PublicSettings } from '@/services/setting.service';
+import { Car } from '@/services/car.service';
 
-const { Content } = Layout;
+interface PublicLayoutProps {
+  children: React.ReactNode;
+  settings?: PublicSettings;
+  cars?: Car[];
+}
 
-const AutoOpenModalHandler = () => {
-  const { openModal } = useModal();
-
-  useEffect(() => {
-    // Check if user has already seen the modal in this session
-    // Using v2 key to reset for user testing
-    const hasSeenModal = sessionStorage.getItem('has_seen_lead_modal_v2');
-
-    if (!hasSeenModal) {
-      const timer = setTimeout(() => {
-        openModal({ type: 'QUOTE' }); // Default to Quote or Consultation
-        sessionStorage.setItem('has_seen_lead_modal_v2', 'true');
-      }, 3000); // 3 seconds wait before opening for better UX testing
-
-      return () => clearTimeout(timer);
-    }
-  }, [openModal]);
-
-  return null;
-};
-
-const PublicLayoutContent = ({ children }: { children: React.ReactNode }) => {
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    // Simulate initial loading for splash screen
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 1500); // 1.5 seconds for "smooth" feel
-
-    return () => clearTimeout(timer);
-  }, []);
-
-  if (isLoading) {
-    return <CarLoading />;
-  }
-
+const PublicLayout = ({ children, settings, cars }: PublicLayoutProps) => {
   return (
-    <Layout className="min-h-screen flex flex-col bg-white">
-      <PublicHeader />
-      <Content className="flex-grow bg-white w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {children}
-      </Content>
-      <FloatingContactButtons />
-      <PublicFooter />
-      <LeadModal />
-      <AutoOpenModalHandler />
-    </Layout>
-  );
-};
-
-const PublicLayout = ({ children }: { children: React.ReactNode }) => {
-  return (
-    <ModalProvider>
-      <PublicLayoutContent>{children}</PublicLayoutContent>
-    </ModalProvider>
+    <PublicLayoutClient
+      header={<PublicHeader settings={settings} cars={cars} />}
+      footer={<PublicFooter settings={settings} cars={cars} />}
+    >
+      {children}
+    </PublicLayoutClient>
   );
 };
 

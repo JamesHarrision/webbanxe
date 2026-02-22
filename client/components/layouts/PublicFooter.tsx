@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Layout, Form, Input, Button, App, Space, ConfigProvider, theme } from 'antd';
+import { Layout } from 'antd';
 import Link from 'next/link';
 import NextImage from 'next/image';
 import {
@@ -13,10 +13,8 @@ import {
   EnvironmentFilled,
   ClockCircleFilled,
 } from '@ant-design/icons';
-import { useQuery } from '@tanstack/react-query';
-import { settingService, PublicSettings } from '@/services/setting.service';
-import { carService } from '@/services/car.service';
-import { leadService } from '@/services/lead.service';
+import { PublicSettings } from '@/services/setting.service';
+import { Car } from '@/services/car.service';
 import LeadForm from '@/components/forms/LeadForm';
 import logo from '@/app/logo.png';
 
@@ -29,18 +27,12 @@ const TikTokIcon = () => (
   </svg>
 );
 
-const PublicFooter: React.FC = () => {
-  // Restore data fetching logic for settings and cars
-  const { data: settings } = useQuery<PublicSettings>({
-    queryKey: ['publicSettings'],
-    queryFn: () => settingService.getPublicSettings(),
-  });
+interface PublicFooterProps {
+  settings?: PublicSettings;
+  cars?: Car[];
+}
 
-  const { data: cars = [] } = useQuery({
-    queryKey: ['publicCars'],
-    queryFn: () => carService.getAll({ view: 'public' }),
-  });
-
+const PublicFooter: React.FC<PublicFooterProps> = ({ settings, cars = [] }) => {
   const branches: string[] = settings?.BRANCHES ? JSON.parse(settings.BRANCHES) : [];
 
   return (
