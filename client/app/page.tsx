@@ -1,4 +1,6 @@
 import React from 'react';
+import Script from 'next/script';
+import { Metadata } from 'next';
 import PublicLayout from '@/components/layouts/PublicLayout';
 import LeadForm from '@/components/forms/LeadForm';
 import { ThunderboltOutlined, SafetyCertificateOutlined, DollarOutlined } from '@ant-design/icons';
@@ -12,6 +14,29 @@ import { heroSlideService } from '@/services/heroSlide.service';
 import { accessoryService } from '@/services/accessory.service';
 import { insuranceService } from '@/services/insurance.service';
 import { testimonialService } from '@/services/testimonial.service';
+
+export async function generateMetadata(): Promise<Metadata> {
+  const settings = await settingService.getPublicSettings();
+  const siteName = settings?.WEBSITE_NAME || 'VinFast Tiền Giang';
+  const description = settings?.ABOUT_TEXT || 'Đại lý ủy quyền VinFast tại Tiền Giang. Cung cấp các dòng xe điện thông minh, an toàn và bền vững.';
+
+  return {
+    title: `${siteName} - Niềm Tin Khách Hàng`,
+    description: description,
+    openGraph: {
+      title: siteName,
+      description: description,
+      url: 'https://vinfasttiengiang.net.vn',
+      siteName: siteName,
+      type: 'website',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: siteName,
+      description: description,
+    },
+  };
+}
 
 export default async function Home() {
   // Fetch all data on the server
@@ -31,8 +56,44 @@ export default async function Home() {
     testimonialService.getPublic(),
   ]);
 
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'AutoDealer',
+    'name': settings?.WEBSITE_NAME || 'VinFast Tiền Giang',
+    'image': 'https://vinfasttiengiang.net.vn/logo.png',
+    'address': {
+      '@type': 'PostalAddress',
+      'streetAddress': settings?.ADDRESS || 'Tiền Giang',
+      'addressLocality': 'Mỹ Tho',
+      'addressRegion': 'Tiền Giang',
+      'addressCountry': 'VN'
+    },
+    'telephone': settings?.HOTLINE || '0939.508.085',
+    'url': 'https://vinfasttiengiang.net.vn',
+    'priceRange': 'VND',
+    'openingHoursSpecification': {
+      '@type': 'OpeningHoursSpecification',
+      'dayOfWeek': [
+        'Monday',
+        'Tuesday',
+        'Wednesday',
+        'Thursday',
+        'Friday',
+        'Saturday',
+        'Sunday'
+      ],
+      'opens': '08:00',
+      'closes': '17:00'
+    }
+  };
+
   return (
     <PublicLayout settings={settings} cars={cars}>
+      <Script
+        id="structured-data"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <HomeClient />
 
       <HeroSlider slides={slides} />
