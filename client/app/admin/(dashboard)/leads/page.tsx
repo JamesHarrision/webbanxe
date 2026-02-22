@@ -17,6 +17,8 @@ const serviceTypeMap: Record<string, string> = {
   BAO_GIA: 'Báo giá',
   MUA_BAO_HIEM: 'Mua bảo hiểm',
   THUE_XE: 'Thuê xe',
+  TRA_GOP: 'Tư vấn trả góp',
+  THUE_PIN: 'Thuê pin',
 };
 
 const LeadManagement = () => {
