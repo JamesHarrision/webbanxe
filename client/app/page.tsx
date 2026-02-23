@@ -3,11 +3,16 @@ export const dynamic = 'force-dynamic';
 import Script from 'next/script';
 import { Metadata } from 'next';
 import PublicLayout from '@/components/layouts/PublicLayout';
-import LeadForm from '@/components/forms/LeadForm';
 import { ThunderboltOutlined, SafetyCertificateOutlined, DollarOutlined } from '@ant-design/icons';
 import HeroSlider from '@/components/home/HeroSlider';
 import ProductList from '@/components/home/ProductList';
-import Testimonials from '@/components/home/Testimonials';
+import nextDynamic from 'next/dynamic';
+const Testimonials = nextDynamic(() => import('@/components/home/Testimonials'), {
+  ssr: true,
+  loading: () => <div className="h-96 animate-pulse bg-gray-50 rounded-3xl" />
+});
+const LeadForm = nextDynamic(() => import('@/components/forms/LeadForm'), { ssr: false });
+
 import HomeClient from '@/components/home/HomeClient';
 import { carService } from '@/services/car.service';
 import { settingService } from '@/services/setting.service';

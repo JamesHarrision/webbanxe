@@ -7,6 +7,7 @@ import { Car } from '@/services/car.service';
 import { Accessory } from '@/services/accessory.service';
 import { Insurance } from '@/services/insurance.service';
 import { useModal } from '@/context/ModalContext';
+import { optimizeImage } from '@/lib/format';
 
 // Swiper
 import { Swiper, SwiperSlide } from 'swiper/react';
@@ -48,10 +49,11 @@ const CarCard: React.FC<{ car: any; openModal: (args: any) => void }> = ({ car, 
       <Link href={`/cars/${car.slug || car.id}`} className="block relative w-full h-40 bg-gray-50 overflow-hidden flex-shrink-0 cursor-pointer">
         <Image
           alt={car.name}
-          src={car.thumbnail || car.image || '/placeholder.svg'}
+          src={optimizeImage(car.thumbnail || car.image)}
           fill
           className="object-contain p-3 group-hover:scale-110 transition-transform duration-500"
           sizes="25vw"
+          priority
         />
         {hasDiscount && (
           <div className="absolute top-2 left-2 bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-sm uppercase">
@@ -103,7 +105,7 @@ const AccessoryCard: React.FC<{ item: Accessory }> = ({ item }) => {
       <div className="block relative w-full h-40 bg-gray-50 overflow-hidden flex-shrink-0">
         <Image
           alt={item.name}
-          src={item.thumbnail || '/placeholder.svg'}
+          src={optimizeImage(item.thumbnail)}
           fill
           className="object-contain p-3 group-hover:scale-110 transition-transform duration-500"
           sizes="25vw"
@@ -140,7 +142,7 @@ const InsuranceCard: React.FC<{ item: Insurance }> = ({ item }) => {
       <div className="block relative w-full h-40 bg-gray-50 overflow-hidden flex-shrink-0">
         <Image
           alt={item.name}
-          src={item.thumbnail || '/placeholder.svg'}
+          src={optimizeImage(item.thumbnail)}
           fill
           className="object-contain p-3 group-hover:scale-110 transition-transform duration-500"
           sizes="25vw"

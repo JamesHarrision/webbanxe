@@ -3,6 +3,7 @@
 import React from 'react';
 import NextImage from 'next/image';
 import { HeroSlide } from '@/services/heroSlide.service';
+import { optimizeImage } from '@/lib/format';
 
 // Swiper
 import { Swiper, SwiperSlide } from 'swiper/react';
@@ -42,7 +43,7 @@ const HeroSlider: React.FC<HeroSliderProps> = ({ slides = [] }) => {
               {/* Background Image */}
               <div className="absolute inset-0 z-0">
                 <NextImage
-                  src={slide.imageUrl}
+                  src={optimizeImage(slide.imageUrl)}
                   alt={slide.title || 'VinFast Slider'}
                   fill
                   className="object-cover"

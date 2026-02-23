@@ -5,6 +5,7 @@ import { StarFilled, UserOutlined, CameraOutlined } from '@ant-design/icons';
 import { Avatar } from 'antd';
 import Image from 'next/image';
 import { Testimonial } from '@/services/testimonial.service';
+import { optimizeImage } from '@/lib/format';
 
 // Swiper
 import { Swiper, SwiperSlide } from 'swiper/react';
@@ -58,7 +59,7 @@ const Testimonials: React.FC<TestimonialsProps> = ({ reviews = [] }) => {
                 <div className="relative aspect-[4/3] w-full bg-gray-100 overflow-hidden">
                   {review.deliveryImage ? (
                     <Image
-                      src={review.deliveryImage}
+                      src={optimizeImage(review.deliveryImage)}
                       alt={`Bàn giao xe ${review.customerName}`}
                       fill
                       className="object-cover group-hover:scale-105 transition-transform duration-500"
@@ -91,7 +92,7 @@ const Testimonials: React.FC<TestimonialsProps> = ({ reviews = [] }) => {
                   {/* Author Info */}
                   <div className="flex items-center gap-3 pt-4 border-t border-gray-50">
                     <Avatar
-                      src={review.avatar}
+                      src={optimizeImage(review.avatar)}
                       size={48}
                       icon={<UserOutlined />}
                       className="flex-shrink-0 bg-blue-50 text-blue-600"

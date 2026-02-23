@@ -29,3 +29,21 @@ export const formatCurrency = (value: number | string | null | undefined): strin
     maximumFractionDigits: 0
   }).format(num);
 };
+
+/** 
+ * Inject Cloudinary optimization parameters (q_auto,f_auto) into the URL.
+ * Example: .../upload/v123... -> .../upload/q_auto,f_auto/v123...
+ */
+export const optimizeImage = (url: string | null | undefined): string => {
+  if (!url) return '/placeholder.svg';
+  if (typeof url !== 'string') return '/placeholder.svg';
+
+  if (url.includes('cloudinary.com') && url.includes('/upload/')) {
+    // Only inject if not already there
+    if (!url.includes('q_auto')) {
+      return url.replace('/upload/', '/upload/q_auto,f_auto/');
+    }
+  }
+
+  return url;
+};
