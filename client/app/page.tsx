@@ -18,7 +18,7 @@ import { testimonialService } from '@/services/testimonial.service';
 
 export async function generateMetadata(): Promise<Metadata> {
   const settings = await settingService.getPublicSettings();
-  const siteName = settings?.WEBSITE_NAME || 'VinFast Tiền Giang';
+  const siteName = settings?.WEBSITE_NAME || 'VINFAST TIỀN GIANG';
   const description = settings?.ABOUT_TEXT || 'Đại lý ủy quyền VinFast tại Tiền Giang. Cung cấp các dòng xe điện thông minh, an toàn và bền vững.';
 
   return {
