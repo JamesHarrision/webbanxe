@@ -188,7 +188,7 @@ const ProductList: React.FC<ProductListProps> = ({ cars = [], accessories = [], 
     return (
       <div className="w-full lg:w-1/2">
         <div className="flex items-center gap-3 mb-6">
-          <h3 className="text-lg font-bold uppercase text-[#0f4c81] whitespace-nowrap">{title}</h3>
+          <h2 className="text-lg font-bold uppercase text-[#0f4c81] whitespace-nowrap">{title}</h2>
           <div className="flex-1 h-0.5 bg-gray-100" />
         </div>
 

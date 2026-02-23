@@ -21,7 +21,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "VINFAST TIỀN GIANG",
-  description: "Đại lý ủy quyền VinFast tại Tiền Giang. Cung cấp các dòng xe điện thông minh, an toàn và bền vững.",
+  description: "VinFast Tiền Giang - Đại lý ủy quyền chính thức cung cấp xe điện VinFast thông minh, an toàn. Hỗ trợ trả góp, lái thử và bảo hành 10 năm. Liên hệ ngay!",
   icons: {
     icon: "/icon.png",
     apple: "/icon.png",
