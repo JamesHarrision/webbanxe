@@ -35,7 +35,7 @@ const HeroSlider: React.FC<HeroSliderProps> = ({ slides = [] }) => {
         autoplay={{ delay: 5000, disableOnInteraction: false }}
         pagination={{ clickable: true }}
         navigation={true}
-        className="h-[500px] md:h-[600px] w-full"
+        className="h-[350px] md:h-[600px] w-full"
       >
         {slides.map((slide) => (
           <SwiperSlide key={slide.id}>
@@ -46,7 +46,7 @@ const HeroSlider: React.FC<HeroSliderProps> = ({ slides = [] }) => {
                   src={optimizeImage(slide.imageUrl)}
                   alt={slide.title || 'VinFast Slider'}
                   fill
-                  className="object-cover"
+                  className="object-contain object-center"
                   priority
                 />
                 <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/40 to-transparent" />
