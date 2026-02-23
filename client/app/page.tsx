@@ -1,5 +1,5 @@
-import React from 'react';
-export const dynamic = 'force-dynamic';
+import React, { Suspense } from 'react';
+export const revalidate = 60; // Enable ISR with 60s revalidation
 import Script from 'next/script';
 import { Metadata } from 'next';
 import PublicLayout from '@/components/layouts/PublicLayout';
@@ -39,22 +39,50 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
+// Skeleton components for Suspense
+const SectionSkeleton = () => (
+  <div className="w-full h-96 animate-pulse bg-gray-50 rounded-3xl" />
+);
+
+// Async data wrappers for streaming
+async function HeroSliderSection() {
+  const slides = await heroSlideService.getPublic();
+  return <HeroSlider slides={slides} />;
+}
+
+async function ProductListSection({ cars }: { cars: any[] }) {
+  const [accessories, insurances] = await Promise.all([
+    accessoryService.getAccessories(),
+    insuranceService.getInsurances(),
+  ]);
+
+  return (
+    <ProductList
+      cars={cars}
+      accessories={accessories}
+      insurances={insurances}
+    />
+  );
+}
+
+async function DynamicSectionsWrapper({ settings }: { settings: any }) {
+  const testimonials = await testimonialService.getPublic();
+  return (
+    <HomeDynamicSections
+      testimonials={testimonials}
+      hotline={settings?.HOTLINE}
+    />
+  );
+}
+
 export default async function Home() {
-  // Fetch all data on the server
+  // Fetch only essential data for the shell
   const [
     settings,
     cars,
-    slides,
-    accessories,
-    insurances,
-    testimonials
   ] = await Promise.all([
     settingService.getPublicSettings(),
     carService.getAll({ view: 'public' }),
-    heroSlideService.getPublic(),
-    accessoryService.getAccessories(),
-    insuranceService.getInsurances(),
-    testimonialService.getPublic(),
   ]);
 
   const jsonLd = {
@@ -75,13 +103,7 @@ export default async function Home() {
     'openingHoursSpecification': {
       '@type': 'OpeningHoursSpecification',
       'dayOfWeek': [
-        'Monday',
-        'Tuesday',
-        'Wednesday',
-        'Thursday',
-        'Friday',
-        'Saturday',
-        'Sunday'
+        'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'
       ],
       'opens': '08:00',
       'closes': '17:00'
@@ -99,9 +121,11 @@ export default async function Home() {
 
       <h1 className="sr-only">VinFast Tiền Giang - Đại lý ủy quyền xe điện VinFast chính hãng</h1>
 
-      <HeroSlider slides={slides} />
+      <Suspense fallback={<div className="h-[350px] md:h-[600px] bg-gray-900 animate-pulse" />}>
+        <HeroSliderSection />
+      </Suspense>
 
-      {/* Introduction Section for SEO */}
+      {/* Introduction Section for SEO - Renders immediately */}
       <section className="py-16 bg-white">
         <div className="container mx-auto px-4 max-w-7xl">
           <div className="flex flex-col md:flex-row items-center gap-12">
@@ -129,13 +153,11 @@ export default async function Home() {
         </div>
       </section>
 
-      <ProductList
-        cars={cars}
-        accessories={accessories}
-        insurances={insurances}
-      />
+      <Suspense fallback={<div className="py-12 container mx-auto px-4"><SectionSkeleton /></div>}>
+        <ProductListSection cars={cars} />
+      </Suspense>
 
-      {/* Features Section */}
+      {/* Features Section - Renders immediately */}
       <section className="py-8 bg-gray-50">
         <div className="container mx-auto px-4 max-w-7xl">
           <div className="text-center mb-16">
@@ -180,10 +202,9 @@ export default async function Home() {
         </div>
       </section>
 
-      <HomeDynamicSections
-        testimonials={testimonials}
-        hotline={settings?.HOTLINE}
-      />
+      <Suspense fallback={<div className="py-16 bg-blue-50"><div className="container mx-auto px-4 animate-pulse h-64 bg-white rounded-3xl" /></div>}>
+        <DynamicSectionsWrapper settings={settings} />
+      </Suspense>
     </PublicLayout>
   );
 }
