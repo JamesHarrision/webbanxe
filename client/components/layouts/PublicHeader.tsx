@@ -173,8 +173,9 @@ const PublicHeader: React.FC<PublicHeaderProps> = ({ settings, cars = [] }) => {
         {/* Mobile Menu Button */}
         <div className="lg:hidden flex">
           <Button
-            type="text"
-            icon={<MenuOutlined className="text-2xl text-[#0f4c81]" />}
+            type="primary"
+            className="bg-[#0f4c81] border-none flex items-center justify-center h-10 w-10 p-0 shadow-md hover:bg-[#155a96] transition-colors"
+            icon={<MenuOutlined className="text-xl text-white" />}
             onClick={() => setMobileMenuOpen(true)}
           />
         </div>
