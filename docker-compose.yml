@@ -4,13 +4,13 @@ services:
     container_name: vinfast-db
     restart: always
     environment:
-      POSTGRES_USER: vinfaster
-      POSTGRES_PASSWORD: securepassword
-      POSTGRES_DB: vinfast_db
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
     volumes:
       - postgres-data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U vinfaster -d vinfast_db"]
+      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}" ]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -24,11 +24,16 @@ services:
     container_name: vinfast-main-backend
     restart: always
     ports:
-      - "6868:6868" # Corrected port from .env
+      - "${PORT}:${PORT}"
     environment:
-      - DATABASE_URL=postgresql://vinfaster:securepassword@db:5432/vinfast_db
-      - PORT=6868
-      - JWT_SECRET=vinfast_tiengiang_secret_key_2026_!@#
+      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
+      - PORT=${PORT}
+      - JWT_SECRET=${JWT_SECRET}
+      - JWT_EXPIRES_IN=${JWT_EXPIRES_IN}
+      - NODE_ENV=production
+      - CLOUDINARY_CLOUD_NAME=${CLOUDINARY_CLOUD_NAME}
+      - CLOUDINARY_API_KEY=${CLOUDINARY_API_KEY}
+      - CLOUDINARY_API_SECRET=${CLOUDINARY_API_SECRET}
     depends_on:
       db:
         condition: service_healthy
