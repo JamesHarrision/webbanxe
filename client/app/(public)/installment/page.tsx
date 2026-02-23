@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+export const dynamic = 'force-dynamic';
 import { Row, Col, Card, Typography, Space, Divider } from 'antd';
 import {
   SafetyCertificateOutlined,

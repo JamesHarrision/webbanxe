@@ -1,4 +1,5 @@
 import { Metadata } from 'next';
+export const dynamic = 'force-dynamic';
 import { carService } from '@/services/car.service';
 import CarDetailClient from './CarDetailClient';
 

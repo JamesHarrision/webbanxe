@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+export const dynamic = 'force-dynamic';
 import { useQuery } from '@tanstack/react-query';
 import Image from 'next/image';
 import Link from 'next/link';

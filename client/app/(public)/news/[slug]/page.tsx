@@ -1,4 +1,5 @@
 import { Metadata } from 'next';
+export const dynamic = 'force-dynamic';
 import { postService } from '@/services/post.service';
 import NewsDetailClient from './NewsDetailClient';
 

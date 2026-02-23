@@ -1,4 +1,5 @@
 import React from 'react';
+export const dynamic = 'force-dynamic';
 import Script from 'next/script';
 import { Metadata } from 'next';
 import PublicLayout from '@/components/layouts/PublicLayout';
