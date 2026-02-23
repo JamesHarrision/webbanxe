@@ -13,6 +13,8 @@ import {
   StarOutlined,
   ShoppingOutlined,
   SafetyCertificateOutlined,
+  MenuUnfoldOutlined,
+  MenuFoldOutlined,
 } from '@ant-design/icons';
 import { useRouter, usePathname } from 'next/navigation';
 import { useAuthStore } from '@/store/authStore';
@@ -28,6 +30,7 @@ export default function AdminDashboardLayout({
   const router = useRouter();
   const pathname = usePathname();
   const { isAuthenticated, logout, user, _hasHydrated } = useAuthStore();
+  const [collapsed, setCollapsed] = React.useState(false);
   const {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
@@ -49,7 +52,15 @@ export default function AdminDashboardLayout({
 
   return (
     <Layout className="h-screen text-slate-900" style={{ background: '#f0f2f5' }}>
-      <Sider breakpoint="lg" collapsedWidth="0" style={{ height: '100vh', position: 'sticky', top: 0, left: 0, overflow: 'auto' }}>
+      <Sider 
+        breakpoint="lg" 
+        collapsedWidth="0" 
+        trigger={null}
+        collapsible
+        collapsed={collapsed}
+        onCollapse={(value) => setCollapsed(value)}
+        style={{ height: '100vh', position: 'sticky', top: 0, left: 0, overflow: 'auto', zIndex: 100 }}
+      >
         <div className="demo-logo-vertical p-4 text-white text-xl font-bold text-center">
           VinFast Admin
         </div>
@@ -108,7 +119,23 @@ export default function AdminDashboardLayout({
       </Sider>
       <Layout style={{ background: '#f0f2f5', display: 'flex', flexDirection: 'column', height: '100vh', overflow: 'hidden' }}>
         <Header style={{ padding: 0, background: colorBgContainer, flexShrink: 0 }} className="flex justify-between items-center px-4 shadow-sm z-10">
-          <h2 className="text-lg font-semibold ml-4">Xin chào, {user?.email}</h2>
+          <div className="flex items-center">
+            <Button
+              type="primary"
+              icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+              onClick={() => setCollapsed(!collapsed)}
+              className="lg:hidden ml-2"
+              style={{
+                backgroundColor: '#000',
+                borderColor: '#000',
+                color: '#fff',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            />
+            <h2 className="text-lg font-semibold ml-4">Xin chào, {user?.email}</h2>
+          </div>
           <Button
             type="text"
             icon={<LogoutOutlined />}
