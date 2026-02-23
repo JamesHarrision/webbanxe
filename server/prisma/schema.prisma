@@ -3,7 +3,7 @@ generator client {
 }
 
 datasource db {
-  provider = "mysql"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -27,7 +27,7 @@ model Car {
   category    String
   thumbnail   String
   images      Json? // Mảng URL ảnh gallery (VD: ["url1", "url2"])
-  description String?  @db.LongText
+  description String?  @db.Text
   isActive    Boolean  @default(true)
 
   // Quan hệ 1-N với bảng Màu Xe
@@ -77,7 +77,7 @@ model Accessory {
   price        String?
   salePrice    String?
   affiliateUrl String   @db.Text
-  description  String?  @db.LongText
+  description  String?  @db.Text
   isActive     Boolean  @default(true)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
@@ -122,7 +122,7 @@ model Post {
   slug        String  @unique
   thumbnail   String
   excerpt     String? @db.Text
-  content     String  @db.LongText
+  content     String  @db.Text
   category    String
   isPublished Boolean @default(true)
 
