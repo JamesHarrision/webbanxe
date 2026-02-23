@@ -1,5 +1,5 @@
 import React, { Suspense } from 'react';
-export const revalidate = 60; // Enable ISR with 60s revalidation
+export const revalidate = 20; // Enable ISR with 60s revalidation
 import Script from 'next/script';
 import { Metadata } from 'next';
 import PublicLayout from '@/components/layouts/PublicLayout';
