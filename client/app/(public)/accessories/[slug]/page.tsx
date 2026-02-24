@@ -5,7 +5,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import { accessoryService, Accessory } from '@/services/accessory.service';
 import Image from 'next/image';
-import { Spin, Breadcrumb } from 'antd';
+import { Spin, Breadcrumb, Image as AntImage } from 'antd';
 import Link from 'next/link';
 
 const AccessoryDetailPage = () => {
@@ -45,13 +45,15 @@ const AccessoryDetailPage = () => {
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 p-6 md:p-10">
             {/* Left: Image */}
-            <div className="relative aspect-square rounded-xl overflow-hidden shadow-inner border border-gray-50">
-              <Image
+            <div className="relative aspect-square rounded-xl overflow-hidden shadow-inner border border-gray-50 flex items-center justify-center bg-white cursor-zoom-in">
+              <AntImage
                 src={accessory.thumbnail}
                 alt={accessory.name}
-                fill
-                className="object-cover"
-                priority
+                className="!w-full !h-full object-contain p-4"
+              // AntImage has built-in preview/zoom functionality by default.
+              // No need to explicitly set preview={true} or add custom onClick for a single image.
+              // If preview={false} was intended, it would disable the zoom.
+              // Assuming "update with zoom" means enabling the default AntImage preview.
               />
             </div>
 

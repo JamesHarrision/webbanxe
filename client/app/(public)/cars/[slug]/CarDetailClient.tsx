@@ -15,6 +15,7 @@ import {
 import { carService, Car } from '@/services/car.service';
 import { useModal } from '@/context/ModalContext';
 import { formatCurrency, getNumericPrice } from '@/lib/format';
+import { Image as AntImage } from 'antd';
 
 // Swiper imports
 import { Swiper, SwiperSlide } from 'swiper/react';
@@ -77,6 +78,8 @@ export default function CarDetailClient({ slug }: { slug: string }) {
 
   const [thumbsSwiper, setThumbsSwiper] = useState<SwiperType | null>(null);
   const [mainSwiper, setMainSwiper] = useState<SwiperType | null>(null);
+  const [previewVisible, setPreviewVisible] = useState(false);
+  const [previewIndex, setPreviewIndex] = useState(0);
 
   const {
     data: car,
@@ -162,38 +165,58 @@ export default function CarDetailClient({ slug }: { slug: string }) {
           {/* Gallery Column */}
           <div className="space-y-4">
             <div className="relative group">
-              <Swiper
-                onSwiper={setMainSwiper}
-                spaceBetween={10}
-                navigation={true}
-                pagination={swiperPagination}
-                thumbs={{ swiper: thumbsSwiper && !thumbsSwiper.destroyed ? thumbsSwiper : null }}
-                modules={swiperModules}
-                className="aspect-[4/3] rounded-3xl overflow-hidden bg-gray-50 border border-gray-100 shadow-sm"
+              <AntImage.PreviewGroup
+                preview={{
+                  visible: previewVisible,
+                  onVisibleChange: (value) => setPreviewVisible(value),
+                  current: previewIndex,
+                }}
               >
-                {allImages.map((img, idx) => (
-                  <SwiperSlide key={idx} className="relative w-full h-full flex items-center justify-center p-4">
-                    <Image
-                      src={img.url}
-                      alt={car.name}
-                      fill
-                      className="object-contain p-4 md:p-8"
-                      sizes="(max-width: 1024px) 100vw, 50vw"
-                      priority={idx === 0}
-                    />
-                  </SwiperSlide>
-                ))}
+                <Swiper
+                  onSwiper={setMainSwiper}
+                  onSlideChange={(swiper) => setPreviewIndex(swiper.activeIndex)}
+                  spaceBetween={10}
+                  navigation={true}
+                  pagination={swiperPagination}
+                  thumbs={{ swiper: thumbsSwiper && !thumbsSwiper.destroyed ? thumbsSwiper : null }}
+                  modules={swiperModules}
+                  className="aspect-[4/3] rounded-3xl overflow-hidden bg-gray-50 border border-gray-100 shadow-sm"
+                >
+                  {allImages.map((img, idx) => (
+                    <SwiperSlide key={idx} className="relative w-full h-full flex items-center justify-center">
+                      <div className="relative w-full h-full p-4 md:p-8 flex items-center justify-center cursor-zoom-in">
+                        <AntImage
+                          src={img.url}
+                          alt={car.name}
+                          preview={false}
+                          onClick={() => {
+                            setPreviewIndex(idx);
+                            setPreviewVisible(true);
+                          }}
+                          className="!w-full !h-full object-contain"
+                        />
+                      </div>
+                      {/* Hidden images for PreviewGroup to recognize all slides */}
+                      <div className="hidden">
+                        <AntImage src={img.url} />
+                      </div>
+                    </SwiperSlide>
+                  ))}
 
-                {hasDiscount && (
-                  <div className="absolute top-4 left-4 z-10 bg-red-500 text-white text-[10px] md:text-xs font-bold px-3 py-1.5 rounded-full shadow-lg uppercase tracking-wide">
-                    Ưu đãi đặc biệt
-                  </div>
-                )}
+                  {hasDiscount && (
+                    <div className="absolute top-4 left-4 z-10 bg-red-500 text-white text-[10px] md:text-xs font-bold px-3 py-1.5 rounded-full shadow-lg uppercase tracking-wide">
+                      Ưu đãi đặc biệt
+                    </div>
+                  )}
 
-                <button className="absolute bottom-4 right-4 z-10 bg-white/80 backdrop-blur-sm p-2 rounded-full text-gray-600 hover:text-[#0f4c81] transition-colors md:hidden cursor-pointer">
-                  <FullscreenOutlined />
-                </button>
-              </Swiper>
+                  <button
+                    onClick={() => setPreviewVisible(true)}
+                    className="absolute bottom-4 right-4 z-10 bg-white/80 backdrop-blur-sm p-2 rounded-full text-gray-600 hover:text-[#0f4c81] transition-colors md:hidden cursor-pointer"
+                  >
+                    <FullscreenOutlined />
+                  </button>
+                </Swiper>
+              </AntImage.PreviewGroup>
             </div>
 
             {allImages.length > 1 && (

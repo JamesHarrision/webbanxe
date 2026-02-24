@@ -188,25 +188,30 @@ const ProductList: React.FC<ProductListProps> = ({ cars = [], accessories = [], 
   const renderSection = (title: string, list: any[], CardComponent: React.ComponentType<any>, cardPropName: string, viewAllUrl: string, fullWidth: boolean = false) => {
     return (
       <div className={fullWidth ? "w-full mb-16" : "w-full lg:w-1/2 mb-12"}>
-        <div className="flex items-center justify-between mb-8">
-          <div className="flex items-center gap-4 flex-1">
-            <h2 className={`font-bold uppercase text-[#0f4c81] whitespace-nowrap ${fullWidth ? 'text-2xl tracking-tight' : 'text-lg'}`}>{title}</h2>
+        <div className="flex flex-row items-center justify-between mb-8 gap-4">
+          <div className="flex items-center gap-4 flex-1 min-w-0">
+            <h2 className={`font-bold uppercase text-[#0f4c81] break-words ${fullWidth ? 'text-xl md:text-2xl tracking-tight' : 'text-lg'}`}>
+              {title}
+            </h2>
             <div className="flex-1 h-px bg-gray-100 hidden md:block" />
           </div>
           <Link
             href={viewAllUrl}
-            className="flex items-center gap-1.5 text-[#0f4c81] hover:text-blue-600 font-bold text-sm transition-colors group shrink-0 ml-4"
+            className="flex items-center gap-1.5 text-[#0f4c81] hover:text-blue-600 font-bold text-sm transition-colors group shrink-0"
           >
-            Xem tất cả <RightOutlined className="text-[10px] transition-transform group-hover:translate-x-1" />
+            <span className="hidden sm:inline">Xem tất cả</span>
+            <span className="sm:hidden text-xs">Tất cả</span>
+            <RightOutlined className="text-[10px] transition-transform group-hover:translate-x-1" />
           </Link>
         </div>
 
         {list.length > 0 ? (
           <Swiper
             modules={[Navigation, Pagination, A11y]}
-            spaceBetween={20}
+            spaceBetween={16}
             slidesPerView={1.2}
             breakpoints={{
+              380: { slidesPerView: 1.3 },
               480: { slidesPerView: 2 },
               768: { slidesPerView: fullWidth ? 3 : 2 },
               1024: { slidesPerView: fullWidth ? 4 : 2 }
